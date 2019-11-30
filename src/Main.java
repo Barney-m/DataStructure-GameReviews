@@ -1,15 +1,10 @@
-package datastructure.gamereviews;
-
 import com.app.adt.list.LinkedList;
 import com.app.model.Review;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
-public class DataStructureGameReviews {
+public class Main {
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
         BufferedReader reader = null;
 		
@@ -33,4 +28,5 @@ public class DataStructureGameReviews {
             e.printStackTrace();
 	}
     }
+    
 }
