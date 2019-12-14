@@ -1,7 +1,6 @@
 package com.app.adt.list;
 
 import java.collection.Arrays;
-import java.collection.Iterator;
 
 public class ArrayList<E> implements IList<E>{
 	
