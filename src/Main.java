@@ -14,7 +14,6 @@ import java.util.Arrays;
 public class Main {
     
     static IList<Review> reviewList = new ArrayList<>();
-    
     public static void main(String[] args) {
         BufferedReader reader = null;
 		

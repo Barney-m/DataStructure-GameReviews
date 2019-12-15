@@ -19,7 +19,6 @@ public class TestADT {
         for(int i = 0;i < game.length();i++){
             tmp.add(game.get(i));
 
-                
                 categories.put(tmp.get(i).charAt(0),tmp);
                 
 

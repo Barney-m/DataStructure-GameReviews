@@ -14,8 +14,11 @@ public class ArrayList<E> implements IList<E>{
 	
 	public boolean add(int index, E value) {
         if (size >= array.length) {
-        	int newSize = size + (size<<1);
+            doubleArray();
+            /*
+            int newSize = size + (size<<1);
             array = Arrays.copyOf(array, newSize);
+            */
         }
         
         if (index==size) {
@@ -67,8 +70,8 @@ public class ArrayList<E> implements IList<E>{
 	}
 	
 	public E get(int index) {
-		if(index < 0 || index >= size) return null;
-		return array[index];
+            if(index < 0 || index >= size) return null;
+            return array[index];
 	}
         
         public int length(){
@@ -80,20 +83,29 @@ public class ArrayList<E> implements IList<E>{
         }
 	
 	public void clear() {
-		size = 0;
+            size = 0;
 	}
 	
 	public boolean contains(E value) {
-		for (int i = 0; i < size; i++) {
-            E obj = array[i];
-            if (obj.equals(value)) return true;
-        }
-        return false;
+            for (int i = 0; i < size; i++) {
+                E obj = array[i];
+                if (obj.equals(value)) return true;
+            }
+            return false;
 	}
 	
 	public int size() {
-        return size;
-    }
+            return size;
+        }
+        
+        private void doubleArray(){
+            E[] tmp = array;
+            int tmpSize = array.length;
+            
+            array = (E[])new Object[2 * tmpSize];
+            
+            System.arraycopy(tmp, 0, array, 0, tmpSize);
+        }
 	
 	public boolean validate() {
         int localSize = 0;
