@@ -33,17 +33,17 @@ public class Main {
                 
             }
             
-            IStack<String> queue = new ArrayStack<String>();
+            IQueue<String> queue = new ArrayQueue<String>();
             
             for(int i = 0;i < reviewList.length();i++){
                 if(reviewList.get(i).getTitle().equals("Grand Theft Auto V")){
                     String[] comments = reviewList.get(i).getReview().toLowerCase().split(" ");
                     insertionSort(comments);
-                    queue.push(Arrays.toString(comments));
+                    queue.add(Arrays.toString(comments));
                 }
             }
             
-            System.out.print(queue.pop());
+            System.out.print(queue.remove());
             
 	}catch(Exception e) {
             e.printStackTrace();

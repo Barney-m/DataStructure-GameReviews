@@ -22,8 +22,11 @@ public class ArrayStack<T> implements IStack<T>{
 	@Override
 	public boolean push(T value) {
 		if(size >= store.length) {
+                    doubleArray();
+                    /*
 			int newSize = size + (size >> 1);
 			store = Arrays.copyOf(store,newSize);
+                    */
 		}
 		
 		store[size++] = value;
@@ -76,6 +79,15 @@ public class ArrayStack<T> implements IStack<T>{
 	public boolean isEmpty() {
 		return size == 0;
 	}
+        
+        private void doubleArray(){
+            T[] tmp = store;
+            int tmpSize = store.length;
+            
+            store = (T[])new Object[2 * tmpSize];
+            
+            System.arraycopy(tmp, 0, store, 0, tmpSize);
+        }
 	
 	public String toString() {
 		StringBuilder builder = new StringBuilder();

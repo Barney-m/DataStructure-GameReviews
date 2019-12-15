@@ -13,7 +13,6 @@ public class ArrayQueue<E> implements IQueue<E>{
 	private E store[];
 	private int front,rear;
 	private int size = 0;
-	private int capacity;
 	
 	public ArrayQueue() {
 		front = 0;
@@ -22,15 +21,17 @@ public class ArrayQueue<E> implements IQueue<E>{
 	}
 	
 	public ArrayQueue(int capacity) {
-		this.capacity = capacity;
 		store = (E[])new Object[capacity];
 	}
 
 	@Override
 	public void add(E value) {
 		if(size >= store.length) {
+                    doubleArray();
+                    /*
 			int newSize = size + (size >> 1);
 			store = Arrays.copyOf(store,newSize);
+                    */
 		}
 		
 		if(rear == store.length) {
@@ -79,6 +80,15 @@ public class ArrayQueue<E> implements IQueue<E>{
 	public int size() {
 		return size;
 	}
+        
+        private void doubleArray(){
+            E[] tmp = store;
+            int tmpSize = store.length;
+            
+            store = (E[])new Object[2 * tmpSize];
+            
+            System.arraycopy(tmp, 0, store, 0, tmpSize);
+        }
 	
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
