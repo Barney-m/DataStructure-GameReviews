@@ -1,12 +1,14 @@
 package com.app.adt.list;
 
-import java.collection.Arrays;
+import java.util.Arrays;
+import com.app.adt.IComparable;
+import com.app.adt.IComparator;
 
 public class ArrayList<E> implements IList<E>{
 	
 	private static final int MINIMUM_CAPACITY = 1024;
 	private int size = 0;
-	private E[] array = (E[])new Object[MINIMUM_CAPACITY];
+	private transient E[] array = (E[])new Object[MINIMUM_CAPACITY];
 	
 	public boolean add(E value) {
 		return add(size,value);
@@ -128,5 +130,11 @@ public class ArrayList<E> implements IList<E>{
         }
         return builder.toString();
     }
-	
+
+    @Override
+    public Object[] toArray() {
+       return Arrays.copyOf(array, size);
+    }
+        
+       
 }

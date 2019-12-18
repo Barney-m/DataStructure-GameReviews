@@ -6,6 +6,8 @@ import com.app.adt.queue.ArrayQueue;
 import com.app.adt.queue.IQueue;
 import com.app.adt.stack.ArrayStack;
 import com.app.adt.stack.IStack;
+import com.app.algorithm.ISort;
+import com.app.algorithm.InsertionSort;
 import com.app.model.Review;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -37,11 +39,13 @@ public class Main {
             for(int i = 0;i < reviewList.length();i++){
                 if(reviewList.get(i).getTitle().equals("Grand Theft Auto V")){
                     String[] comments = reviewList.get(i).getReview().toLowerCase().split(" ");
-                    insertionSort(comments);
+                    ISort<Review> sorting = new InsertionSort<Review>();
+                    sorting.sort(reviewList.toArray());
                     queue.add(Arrays.toString(comments));
                 }
+                
             }
-            
+            System.out.print(reviewList.toString());
             System.out.print(queue.remove());
             
 	}catch(Exception e) {

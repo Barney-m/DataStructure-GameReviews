@@ -1,6 +1,9 @@
 package com.app.model;
 
-public class Review{
+import com.app.adt.IComparable;
+import com.app.adt.IComparator;
+
+public class Review implements IComparable<Review>{
 	
 	private String date_posted;
 	private int funny;
@@ -87,4 +90,16 @@ public class Review{
 	public void setTitle(String title) {
 		this.title = title;
 	}
+
+    @Override
+    public int compareTo(Review object) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+        
+        public static class CompareReview implements IComparator<Review>{
+                @Override
+                public int compare(Review object1, Review object2){
+                    return object1.getReview().compareTo(object2.getReview());
+                }
+        }
 }

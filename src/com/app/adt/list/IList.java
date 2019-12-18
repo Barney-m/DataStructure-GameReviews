@@ -12,8 +12,12 @@ public interface IList<E> {
 	boolean add(int index, E element);
 
 	boolean add(E element);
+        
+                  int size();
 
 	E remove(int index);
 
 	void clear();
+        
+                  Object[] toArray();
 }
