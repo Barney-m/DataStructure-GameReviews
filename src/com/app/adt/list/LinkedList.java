@@ -1,296 +1,303 @@
 package com.app.adt.list;
 
+import com.app.adt.IIterator;
+import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
-import java.util.Iterator;
 
-public class LinkedList<E> implements ILinkedList<E>,Iterable<E>{
-   private Node<E> head;
+public class LinkedList<E>{
+    
+    private int size = 0;
+    private Node head;
+    private Node tail;
+    
+    
+    public void add(int index, E data) {
+        checkPositionIndex(index);
 
- /**
-   *  Constructs an empty list
-   */
-   public LinkedList()
-   {
-      head = null;
-   }
- /**
-   *  Returns true if the list is empty
-   *
-   */
-   public boolean isEmpty()
-   {
-      return head == null;
-   }
- /**
-   *  Inserts a new node at the beginning of this list.
-   *
-   */
-   public void addFirst(E item)
-   {
-      head = new Node<E>(item, head);
-   }
- /**
-   *  Returns the first element in the list.
-   *
-   */
-   public E getFirst()
-   {
-      if(head == null) throw new NoSuchElementException();
+        /* 
+         * The cases:
+         * 1. An empty linked list,
+         * 2. The head (before the current first item) of the linked list, i = 0,
+         * 3. The position beyond the last (the current tail) item of the linked list, i = N,
+         * 4. The other positions of the linked list, i = [1..N-1].
+         */
+        if (size == 0) {
+            insertNew(data);
+        } else if (index == 0) {
+            insertHead(data);
+        } else if (index == size) {
+            insertTail(data);
+        } else {
+            insertMiddle(data, node(index));
+        }
+    }
 
-      return head.data;
-   }
- /**
-   *  Removes the first element in the list.
-   *
-   */
-   public E removeFirst()
-   {
-      E tmp = getFirst();
-      head = head.next;
-      return tmp;
-   }
- /**
-   *  Inserts a new node to the end of this list.
-   *
-   */
-   public void addLast(E item)
-   {
-      if( head == null)
-         addFirst(item);
-      else
-      {
-         Node<E> tmp = head;
-         while(tmp.next != null) tmp = tmp.next;
+    
+    public void clear() {
+        // Clearing all of the links between nodes is "unnecessary", but:
+        // - helps a generational GC if the discarded nodes inhabit
+        //   more than one generation
+        // - is sure to free memory even if there is a reachable Iterator
+        Node<E> temp = head;
+        while (temp != head) {
+            Node<E> next = temp.next;
+            temp.data = null;
+            temp.next = null;
+            temp.prev = null;
+            temp = next;
+        }
 
-         tmp.next = new Node<E>(item, null);
-      }
-   }
- /**
-   *  Returns the last element in the list.
-   *
-   */
-   public E getLast()
-   {
-      if(head == null) throw new NoSuchElementException();
+        head = null;
+        tail = null;
+        size = 0;
+    }
 
-      Node<E> tmp = head;
-      while(tmp.next != null) tmp = tmp.next;
+    
+    public E get(int index) {
+        checkElementIndex(index);
+        return node(index).data;
+    }
 
-      return tmp.data;
-   }
- /**
-   *  Removes all nodes from the list.
-   *
-   */
-   public void clear()
-   {
-      head = null;
-   }
- /**
-   *  Returns true if this list contains the specified element.
-   *
-   */
-   public boolean contains(E x)
-   {
-      for(E tmp : this)
-         if(tmp.equals(x)) return true;
+    
+    public int indexOf(Object o) {
+        int index = 0;
+        for (Node<E> x = head; x != null; x = x.next) {
+            if (o.equals(x.data)) {
+                return index;
+            }
+            index++;
+        }
+        return -1;
+    }
 
-      return false;
-   }
- /**
-   *  Returns the data at the specified position in the list.
-   *
-   */
-   public E get(int pos)
-   {
-      if (head == null) throw new IndexOutOfBoundsException();
+    
+    public boolean isEmpty() {
+        return size == 0;
+    }
 
-      Node<E> tmp = head;
-      for (int k = 0; k < pos; k++) tmp = tmp.next;
+    
+    public void remove(int index) {
+        checkElementIndex(index);
 
-      if( tmp == null) throw new IndexOutOfBoundsException();
+        /*
+         * For remove(i), there are three (legal) possibilities, i.e. index i is:
+         *
+         * The head (the current first item) of the linked list, i = 0, it affects the head pointer
+         * The tail of the linked list, i = N-1, it affects the tail pointer
+         * The other positions of the linked list, i = [1..N-2].
+         */
+        if (index == 0) {
+            removeHead();
+        } else if (index == size - 1) {
+            removeTail();
+        } else {
+            removeMiddle(node(index));
+        }
+    }
 
-      return tmp.data;
-   }
- /**
-   *  Returns a string representation
-   *
-   */
-   public String toString()
-   {
-      StringBuffer result = new StringBuffer();
-      for(Object x : this)
-      	result.append(x + " ");
+    
+    public int size() {
+        return size;
+    }
 
-      return result.toString();
-   }
- /**
-   *  Inserts a new node after a node containing the key.
-   *
-   */
-   public void insertAfter(E key, E toInsert)
-   {
-      Node<E> tmp = head;
+    
+    public void add(E e) {
+        if (tail != null) {
+            insertTail(e);
+        } else {
+            insertNew(e);
+        }
+    }
 
-      while(tmp != null && !tmp.data.equals(key)) tmp = tmp.next;
+    
+    public boolean remove(Object o) {
+        remove(indexOf(o));
+        return true;
+    }
 
-      if(tmp != null)
-         tmp.next = new Node<E>(toInsert, tmp.next);
-   }
- /**
-   *  Inserts a new node before a node containing the key.
-   *
-   */
-   public void insertBefore(E key, E toInsert)
-   {
-      if(head == null) return;
+    
+    public Object[] toArray() {
+        Object[] array = new Object[size];
+        int i = 0;
+        for (Node<E> node = head;
+                node != null;
+                node = node.next) {
+            array[i++] = node.data;
+        }
+        return array;
+    }
 
-      if(head.data.equals(key))
-      {
-         addFirst(toInsert);
-         return;
-      }
+    private static class Node<E> {
 
-      Node<E> prev = null;
-      Node<E> cur = head;
+        E data;
+        Node<E> next;
+        Node<E> prev;
 
-      while(cur != null && !cur.data.equals(key))
-      {
-         prev = cur;
-         cur = cur.next;
-      }
-      //insert between cur and prev
-      if(cur != null)
-         prev.next = new Node<E>(toInsert, cur);
-   }
- /**
-   *  Removes the first occurrence of the specified element in this list.
-   *
-   */
-   public void remove(E key)
-   {
-      if(head == null)
-         throw new RuntimeException("cannot delete");
+        public Node(Node<E> prev, E data, Node<E> next) {
+            this.data = data;
+            this.next = next;
+            this.prev = prev;
+        }
+    }
 
-      if( head.data.equals(key) )
-      {
-         head = head.next;
-         return;
-      }
+    /*
+     * Tells if the argument is the index of an existing element.
+     */
+    private void checkElementIndex(int index) {
+        if (!(index >= 0 && index < size)) {
+            throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
+        }
+    }
 
-      Node<E> cur  = head;
-      Node<E> prev = null;
+    /*
+     * Tells if the argument is the index of a valid position for an iterator or
+     * an add operation.
+     */
+    private void checkPositionIndex(int index) {
+        if (!(index >= 0 && index <= size)) {
+            throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
+        }
+    }
 
-      while(cur != null && !cur.data.equals(key) )
-      {
-         prev = cur;
-         cur = cur.next;
-      }
+    /*
+     * Constructs an IndexOutOfBoundsException detail message.
+     */
+    private String outOfBoundsMsg(int index) {
+        return "Index: " + index + ", Size: " + size;
+    }
 
-      if(cur == null)
-         throw new RuntimeException("cannot delete");
+    /*
+     * Returns the (non-null) Node at the specified element index.
+     */
+    public Node<E> node(int index) {
 
-      //delete cur node
-      prev.next = cur.next;
-   }
- /**
-   *  Returns a deep copy of the list
-   *  Complexity: O(n^2)
-   */
-   public  LinkedList<E> copy1()
-   {
-      LinkedList<E> twin = new LinkedList<E>();
-      Node<E> tmp = head;
-      while(tmp != null)
-      {
-         twin.addLast( tmp.data );
-         tmp = tmp.next;
-      }
+        // If index is under half part of the list, loop from head
+        // Else loop from tail.
+        // Best case O(1)
+        // Worst case O(n)
+        if (index < (size >> 1)) {
+            Node<E> node = head;
+            for (int i = 0; i < index; i++) {
+                node = node.next;
+            }
+            return node;
+        } else {
+            Node<E> node = tail;
+            for (int i = size - 1; i > index; i--) {
+                node = node.prev;
+            }
+            return node;
+        }
+    }
 
-      return twin;
-   }
- /**
-   *  Returns a deep copy of the list
-   *  Complexity: O(n)
-   */
-   public LinkedList<E> copy2()
-   {
-      LinkedList<E> twin = new LinkedList<E>();
-      Node<E> tmp = head;
-      while(tmp != null)
-      {
-         twin.addFirst( tmp.data );
-         tmp = tmp.next;
-      }
+    private void insertNew(E data) {
+        // Create a new node
+        Node<E> node = new Node(null, data, null);
 
-      return twin.reverse();
-   }
- /**
-   *  Reverses the list
-   *  Complexity: O(n)
-   */
-   public LinkedList<E> reverse()
-   {
-      LinkedList<E> list = new LinkedList<E>();
-      Node<E> tmp = head;
-      while(tmp != null)
-      {
-         list.addFirst( tmp.data );
-         tmp = tmp.next;
-      }
-      return list;
-   }
- /**
-   *  Returns a deep copy of the immutable list
-   *  It uses a tail reference.
-   *  Complexity: O(n)
-   */
-   public LinkedList<E> copy3()
-   {
-      LinkedList<E> twin = new LinkedList<E>();
-      Node<E> tmp = head;
-      if(head==null) return null;
-      twin.head = new Node<E>(head.data, null);
-      Node<E> tmpTwin = twin.head;
-      while(tmp.next != null)
-      {
-         tmp = tmp.next;
-         tmpTwin.next = new Node<E>(tmp.data, null);
-         tmpTwin = tmpTwin.next;
-      }
+        // New head and tail of the list
+        head = node;
+        tail = node;
 
-      return twin;
-   }
+        size++;
+    }
 
- /*******************************************************
- *
- *  The Node class
- *
- ********************************************************/
-   private static class Node<E>
-   {
-      private E data;
-      private Node<E> next;
+    private void insertHead(E data) {
+        // Create a new node, with it's next points to the old head.
+        Node<E> node = new Node(null, data, head);
 
-      public Node(E data, Node<E> next)
-      {
-         this.data = data;
-         this.next = next;
-      }
-   }
+        // Update old head prev
+        head.prev = node;
 
- /*******************************************************
- *
- *  The Iterator class
- *
- ********************************************************/
+        // New head of the list
+        head = node;
 
-   public Iterator<E> iterator()
+        size++;
+    }
+
+    private void insertTail(E data) {
+        // Create a new node, with it's next points to the old tail.
+        Node<E> node = new Node(tail, data, null);
+
+        // Update old tail next
+        tail.next = node;
+
+        // New tail of the list
+        tail = node;
+
+        size++;
+    }
+
+    private void insertMiddle(E data, Node<E> oldNode) {
+        // Create a new node with ;- 
+        // prev - pointing to what's pointed by oldNode.prev
+        // next - pointing to the oldNode.
+        Node<E> node = new Node(oldNode.prev, data, oldNode);
+
+        // Update oldNode.prev's next
+        oldNode.prev.next = node;
+
+        // Update oldNode's prev
+        oldNode.prev = node;
+
+        size++;
+    }
+
+    private void removeHead() {
+        // Temporary store the head
+        Node oldHead = head;
+
+        // Transfer the head
+        head = oldHead.next;
+        head.prev = null;
+
+        // Help garbage collection
+        // oldHead.prev = null; // head's prev is already a null
+        oldHead.data = null;
+        oldHead.next = null;
+
+        size--;
+    }
+
+    private void removeTail() {
+        // Temporary store the tail
+        Node oldTail = tail;
+
+        // Transfer the tail
+        tail = oldTail.prev;
+        tail.prev = null;
+
+        // Help garbage collection
+        oldTail.prev = null;
+        oldTail.data = null;
+        // oldTail.next = null; // tail's next is already a null        
+
+        size--;
+    }
+
+    private void removeMiddle(Node<E> node) {
+        // Temporary store the node
+        Node oldNode = node;
+        Node nextNode = node.next;
+        Node prevNode = node.prev;
+
+        // Relink both next and prev
+        nextNode.prev = prevNode;
+        prevNode.next = nextNode;
+
+        // Help garbage collection
+        oldNode.prev = null;
+        oldNode.data = null;
+        oldNode.next = null;
+
+        size--;
+    }
+    
+    public IIterator<E> iterator()
    {
       return new LinkedListIterator();
    }
 
-   private class LinkedListIterator  implements Iterator<E>
+   private class LinkedListIterator  implements IIterator<E>
    {
       private Node<E> nextNode;
 

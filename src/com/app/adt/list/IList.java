@@ -1,5 +1,7 @@
 package com.app.adt.list;
 
+import com.app.adt.IIterator;
+
 public interface IList<E> {
 	boolean isEmpty();
 
@@ -22,4 +24,10 @@ public interface IList<E> {
                   Object[] toArray();
                   
                   Object[] sort(Object[] data);
+                  
+                  IListIterator<E> listIterator();
+                  
+                  IListIterator<E> listIterator(int index);
+                  
+                  IIterator<E> iterator();
 }

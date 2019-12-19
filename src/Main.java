@@ -1,3 +1,4 @@
+import com.app.adt.IIterator;
 import com.app.adt.list.ArrayList;
 import com.app.adt.list.ILinkedList;
 import com.app.adt.list.IList;
@@ -9,7 +10,9 @@ import com.app.adt.stack.IStack;
 
 import com.app.model.Review;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
 
 public class Main {
@@ -32,45 +35,50 @@ public class Main {
                 
             }
             
+            BufferedReader br = new BufferedReader(new FileReader("filter-word.txt"));
+            String line = null;
+            while((line = br.readLine()) != null){}
+            String[] unsignificantWord = line.split(" ");
+            
             IQueue<String> queue = new ArrayQueue<String>();
             
             for(int i = 0;i < reviewList.length();i++){
-                if(reviewList.get(i).getTitle().equals("Grand Theft Auto V")){
+                    filter(unsignificantWord);
                     String[] comments = reviewList.get(i).getReview().toLowerCase().split(" ");
                     Object[] sortedComments = reviewList.sort(comments);
                     String strSortedComments = "";
                     for(int j = 0;j < sortedComments.length;j++)
                         strSortedComments = sortedComments[j] + " ";
                     reviewList.get(i).setReview(Arrays.toString(sortedComments));
-                    System.out.println(strSortedComments);
-                    queue.add(Arrays.toString(comments));
-                }
-                
             }
-            System.out.print(reviewList.get(0).getReview());
+            
             
 	}catch(Exception e) {
             e.printStackTrace();
 	}
         
+        try{
+            BufferedReader br = new BufferedReader(new FileReader("filter-word.txt"));
+            String line = null;
+            while((line = br.readLine()) != null){}
+            String[] unsignificantWord = line.split(" ");
+            filter(unsignificantWord);
+        }catch(IOException e){
+            
+        }
+        
         
     }
     
-    public static void insertionSort(String[] data){
-        int i;
-        String key;
-        for(int j = 1;j < data.length;j++){
-            key = data[j];
-            i = j - 1;
-            while(i >= 0){
-                if(key.compareTo(data[i]) > 0){
-                    break;
-                }
-                data[i + 1] = data[i];
-                i--;
-            }
-            data[i + 1] = key;
-        }
+    public static void filter(String[] unsignificantWord){
+        LinkedList<String> word = new LinkedList<String>();
+        
+        for(int i = 0;i < unsignificantWord.length;i++)
+            word.add(unsignificantWord[i]);
+        
+        IIterator<String> iterator = word.iterator();
+        
+        while(iterator.hasNext())
     }
 //    
 //    public static void quickSort(String[] data,int start,int end){
