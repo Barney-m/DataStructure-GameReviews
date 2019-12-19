@@ -173,6 +173,16 @@ public class ArrayList<E> implements IList<E>{
     }
     
     @Override
+    public E[] toArray(E[] data) {
+        if(data.length < size)
+            return (E[])Arrays.copyOf(array, size, data.getClass());
+        System.arraycopy(array, 0, data, 0, size);
+        if(data.length > size)
+            data[size] = null;
+        return data;
+    }
+    
+    @Override
     public Object[] sort(Object[] data){
         for(int i = 1;i < data.length;i++){
             Object tmp = data[i];
@@ -198,6 +208,8 @@ public class ArrayList<E> implements IList<E>{
     public IIterator<E> iterator(){
         return new Itr();
     }
+
+    
     
     private class Itr implements IIterator<E>{
         int cursor; //index of next element to return

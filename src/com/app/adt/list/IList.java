@@ -30,4 +30,6 @@ public interface IList<E> {
                   IListIterator<E> listIterator(int index);
                   
                   IIterator<E> iterator();
+
+    public E[] toArray(E[] data);
 }

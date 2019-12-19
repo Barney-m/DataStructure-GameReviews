@@ -1,4 +1,6 @@
 
+import com.app.adt.list.ArrayList;
+import com.app.adt.list.IList;
 import com.app.adt.map.HashMap;
 import com.app.adt.map.IMap;
 
@@ -9,17 +11,17 @@ public class TestMap {
      */
     public static void main(String[] args) {
         
-        IMap<Character,String> map = new HashMap<>(); 
+        IList<String> list = new ArrayList<String>();
         
-        map.put('a', "apple");
-        map.put('a', "abc");
-        map.put('a', "asd");
-        map.put('a', "az");
+        IMap<Character,IList> map = new HashMap<>(); 
+        list.add("apple");
+        list.add("apple1");
+        list.add("apple2");
+        map.put('a', list);
+
         
-        map.put('b', "blob");
-        
-        for(int i = 0;i < map.size();i++){
-            System.out.println(map.get('b'));
+        for(int i = 0;i < map.length();i++){
+            System.out.println(map.get('a'));
         }
     }
     

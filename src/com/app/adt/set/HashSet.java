@@ -20,7 +20,7 @@ public class HashSet<K,V> implements IMap<K,V> {
     }
     
     @Override
-    public V add(K key, V value) {
+    public V put(K key, V value) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

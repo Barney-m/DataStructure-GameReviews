@@ -27,58 +27,65 @@ public class Main {
             String[] dataByRow;
             reader.readLine();
             Review review;
-			
+            
             while((rowData = reader.readLine()).charAt(0) != ',') {
                 dataByRow = rowData.split(",");
 		review = new Review(dataByRow[0],Integer.parseInt(dataByRow[1]),Integer.parseInt(dataByRow[2]),Integer.parseInt(dataByRow[3]),Boolean.parseBoolean(dataByRow[4].toLowerCase()),dataByRow[5],dataByRow[6],dataByRow[7]);
 		reviewList.add(review);
                 
             }
-            
+            //**********************************
+            //*             Filter             *
+            //**********************************
             BufferedReader br = new BufferedReader(new FileReader("filter-word.txt"));
-            String line = null;
-            while((line = br.readLine()) != null){}
+            String line = br.readLine();
             String[] unsignificantWord = line.split(" ");
             
-            IQueue<String> queue = new ArrayQueue<String>();
-            
-            for(int i = 0;i < reviewList.length();i++){
-                    filter(unsignificantWord);
-                    String[] comments = reviewList.get(i).getReview().toLowerCase().split(" ");
-                    Object[] sortedComments = reviewList.sort(comments);
-                    String strSortedComments = "";
-                    for(int j = 0;j < sortedComments.length;j++)
-                        strSortedComments = sortedComments[j] + " ";
-                    reviewList.get(i).setReview(Arrays.toString(sortedComments));
+            IIterator<Review> iterator = reviewList.iterator();
+            int index = 0;
+            while(iterator.hasNext()){
+                String comment = iterator.next().getReview();
+                comment = comment.replaceAll("[^a-zA-Z ]", "");
+                reviewList.get(index).setReview(comment);
+                filter(unsignificantWord,index,0);
+                index++;
             }
             
+            //*********************************
+            //*            Sorting            *
+            //*********************************
+            for(int i = 0;i < reviewList.length();i++){
+                String[] comments = reviewList.get(i).getReview().toLowerCase().split(" ");
+                IList<String> value = new ArrayList<String>();
+                for(String data : comments){
+                    if(!data.equals(""))
+                        value.add(data);
+                }
+
+                String[] target = value.toArray(new String[value.length()]);
+                Object[] sortedComments = reviewList.sort(target);
+                String strSortedComments = "";
+                for(int j = 0;j < sortedComments.length;j++)
+                    strSortedComments = sortedComments[j] + " ";
+                reviewList.get(i).setReview(Arrays.toString(sortedComments));
+            }
+            
+            System.out.println(reviewList.get(20).getReview());
             
 	}catch(Exception e) {
             e.printStackTrace();
 	}
         
-        try{
-            BufferedReader br = new BufferedReader(new FileReader("filter-word.txt"));
-            String line = null;
-            while((line = br.readLine()) != null){}
-            String[] unsignificantWord = line.split(" ");
-            filter(unsignificantWord);
-        }catch(IOException e){
-            
-        }
         
         
     }
     
-    public static void filter(String[] unsignificantWord){
-        LinkedList<String> word = new LinkedList<String>();
-        
-        for(int i = 0;i < unsignificantWord.length;i++)
-            word.add(unsignificantWord[i]);
-        
-        IIterator<String> iterator = word.iterator();
-        
-        while(iterator.hasNext())
+    public static void filter(String[] unsignificantWord,int index,int start){
+        if(start < unsignificantWord.length){
+            reviewList.get(index).setReview(reviewList.get(index).getReview().toLowerCase().replaceAll("\\b" + unsignificantWord[start] + "\\b", ""));
+            start++;
+            filter(unsignificantWord,index,start);
+        }
     }
 //    
 //    public static void quickSort(String[] data,int start,int end){
