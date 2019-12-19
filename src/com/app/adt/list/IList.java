@@ -20,4 +20,6 @@ public interface IList<E> {
 	void clear();
         
                   Object[] toArray();
+                  
+                  Object[] sort(Object[] data);
 }

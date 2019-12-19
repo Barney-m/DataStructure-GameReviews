@@ -135,6 +135,19 @@ public class ArrayList<E> implements IList<E>{
     public Object[] toArray() {
        return Arrays.copyOf(array, size);
     }
+    
+    public Object[] sort(Object[] data){
+        for(int i = 1;i < data.length;i++){
+            Object tmp = data[i];
+            int j;
+            for(j = i;j > 0 && data[j - 1].toString().compareTo(tmp.toString()) > 0;j--){
+                data[j] = data[j - 1];
+            }
+            data[j] = tmp;
+        }
+        return data;
+    }
+
         
        
 }

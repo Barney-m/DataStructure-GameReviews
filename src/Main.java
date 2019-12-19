@@ -6,8 +6,7 @@ import com.app.adt.queue.ArrayQueue;
 import com.app.adt.queue.IQueue;
 import com.app.adt.stack.ArrayStack;
 import com.app.adt.stack.IStack;
-import com.app.algorithm.ISort;
-import com.app.algorithm.InsertionSort;
+
 import com.app.model.Review;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -28,7 +27,6 @@ public class Main {
 			
             while((rowData = reader.readLine()).charAt(0) != ',') {
                 dataByRow = rowData.split(",");
-				
 		review = new Review(dataByRow[0],Integer.parseInt(dataByRow[1]),Integer.parseInt(dataByRow[2]),Integer.parseInt(dataByRow[3]),Boolean.parseBoolean(dataByRow[4].toLowerCase()),dataByRow[5],dataByRow[6],dataByRow[7]);
 		reviewList.add(review);
                 
@@ -39,14 +37,17 @@ public class Main {
             for(int i = 0;i < reviewList.length();i++){
                 if(reviewList.get(i).getTitle().equals("Grand Theft Auto V")){
                     String[] comments = reviewList.get(i).getReview().toLowerCase().split(" ");
-                    ISort<Review> sorting = new InsertionSort<Review>();
-                    sorting.sort(reviewList.toArray());
+                    Object[] sortedComments = reviewList.sort(comments);
+                    String strSortedComments = "";
+                    for(int j = 0;j < sortedComments.length;j++)
+                        strSortedComments = sortedComments[j] + " ";
+                    reviewList.get(i).setReview(Arrays.toString(sortedComments));
+                    System.out.println(strSortedComments);
                     queue.add(Arrays.toString(comments));
                 }
                 
             }
-            System.out.print(reviewList.toString());
-            System.out.print(queue.remove());
+            System.out.print(reviewList.get(0).getReview());
             
 	}catch(Exception e) {
             e.printStackTrace();

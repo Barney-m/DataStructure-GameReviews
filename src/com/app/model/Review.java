@@ -3,7 +3,7 @@ package com.app.model;
 import com.app.adt.IComparable;
 import com.app.adt.IComparator;
 
-public class Review implements IComparable<Review>{
+public class Review implements IComparable<String>{
 	
 	private String date_posted;
 	private int funny;
@@ -11,19 +11,19 @@ public class Review implements IComparable<Review>{
 	private int hour_played;
 	private boolean is_early_access_review;
 	private String recommendation;
-	private String review;
+	private String reviews;
 	private String title;
 	
 	public Review() {}
 	
-	public Review (String date_posted,int funny,int helpful,int hour_played,boolean is_early_access_review,String recommendation,String review,String title) {
+	public Review (String date_posted,int funny,int helpful,int hour_played,boolean is_early_access_review,String recommendation,String reviews,String title) {
 		this.date_posted = date_posted;
 		this.funny = funny;
 		this.helpful = helpful;
 		this.hour_played = hour_played;
 		this.is_early_access_review = is_early_access_review;
 		this.recommendation = recommendation;
-		this.review = review;
+		this.reviews = reviews;
 		this.title = title;
 	}
 	
@@ -52,7 +52,7 @@ public class Review implements IComparable<Review>{
 	}
 	
 	public String getReview() {
-		return review;
+		return reviews;
 	}
 	
 	public String getTitle() {
@@ -83,8 +83,8 @@ public class Review implements IComparable<Review>{
 		this.recommendation = recommendation;
 	}
 	
-	public void setReview(String review) {
-		this.review = review;
+	public void setReview(String reviews) {
+		this.reviews = reviews;
 	}
 	
 	public void setTitle(String title) {
@@ -92,14 +92,14 @@ public class Review implements IComparable<Review>{
 	}
 
     @Override
-    public int compareTo(Review object) {
+    public int compareTo(String object) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
         
-        public static class CompareReview implements IComparator<Review>{
-                @Override
-                public int compare(Review object1, Review object2){
-                    return object1.getReview().compareTo(object2.getReview());
-                }
+        public class CompareReview implements IComparator<String>{
+            @Override
+            public int compare(String object1, String object2) {
+                return 1;
+            }
         }
 }
