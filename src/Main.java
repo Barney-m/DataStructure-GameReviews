@@ -3,6 +3,8 @@ import com.app.adt.list.ArrayList;
 import com.app.adt.list.ILinkedList;
 import com.app.adt.list.IList;
 import com.app.adt.list.LinkedList;
+import com.app.adt.map.HashMap;
+import com.app.adt.map.IMap;
 import com.app.adt.queue.ArrayQueue;
 import com.app.adt.queue.IQueue;
 import com.app.adt.stack.ArrayStack;
@@ -34,6 +36,25 @@ public class Main {
 		reviewList.add(review);
                 
             }
+            
+            IIterator<Review> it = reviewList.iterator();
+            IList<String> titleList = new ArrayList<>();
+            IMap<Character,IList> categories = new HashMap<>();
+            while(it.hasNext()){
+                titleList.add(it.next().getTitle());
+            }
+            System.out.println(titleList);
+            Object[] arrTitle = titleList.toArray();
+            
+            for(int i = 0;i < titleList.length();i++){
+                for(int k = i + 1;k < titleList.length();k++){
+                    if(titleList.get(i).equals(titleList.get(k)))
+                        titleList.remove(k);
+                }
+            }
+            
+            System.out.println(titleList);
+            
             //**********************************
             //*             Filter             *
             //**********************************

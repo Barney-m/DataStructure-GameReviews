@@ -32,8 +32,10 @@ public class DisjointSet<E> {
         E set = findSet(data);
         if(set == null)
             return;
-        for(IIterator<E> it = objectsToNodes.)
+        objectsToNodes.remove(data);
     }
+    
+    
             
     
     
