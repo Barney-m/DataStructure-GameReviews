@@ -162,7 +162,10 @@ public class ArrayList<E> implements IList<E>{
 	public String toString() {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < size; i++) {
-            builder.append(array[i]).append(", ");
+            builder.append(array[i]);
+			
+			if(i + 1 < size)
+				builder.append(",");
         }
         return builder.toString();
     }
