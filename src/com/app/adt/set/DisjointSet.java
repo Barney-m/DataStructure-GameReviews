@@ -1,77 +1,101 @@
 package com.app.adt.set;
 
 import com.app.adt.map.HashMap;
+import com.app.adt.map.IMap;
 
-public class DisjointSet<E> {
-    
-    private DisjointSet(){}
-    
-    private final HashMap<E,Node> objectsToNodes = new HashMap<E,Node>();
-    
-    public void makeSet(E data){
-        final Node node = new Node(null,data);
-        node.parent = node;
-        objectsToNodes.put(data, node);
+public final class DisjointSet<E>
+{
+
+    /**
+     * The map to store the related {@link DisjointSetNode} for each added element.
+     */
+    private final IMap<E, DisjointSetNode<E>> disjointSets = new HashMap<E, DisjointSetNode<E>>();
+
+    /**
+     * Performs the {@code find} operation applying the <i>path compression</i>.
+     *
+     * @param e the element has to be find in this {@code DisjointSet} instance
+     * @return the value found 
+     */
+    public E find( E e )
+    {
+        DisjointSetNode<E> node = find( getNode( e ) );
+
+        if ( node == node.getParent() )
+        {
+            return node.getElement();
+        }
+
+        node.setParent( find( node.getParent() ) );
+
+        return node.getParent().getElement();
     }
-    
-    public E findSet(E data){
-        DisjointSet.Node node = objectsToNodes.get(data);
-        Node tmp = findSet(node);
-        return (E) tmp.value;
+
+    /**
+     * Performs the @code{ find} operation by applying the <i>path compression</i>.
+     *
+     * @param node the input DisjointSet node for the @code{ find} operation
+     * @return the root node of the path
+     */
+    private DisjointSetNode<E> find( DisjointSetNode<E> node )
+    {
+        if ( node == node.getParent() )
+        {
+            return node;
+        }
+        return find( node.getParent() );
     }
-    
-    private Node findSet(Node node){
-        if(node == null)
-            return null;
-        if(node != node.parent)
-            node.parent = findSet(node.parent);
-        return node.parent;
-    }
-    
-    public void removeSet(E data){
-        E set = findSet(data);
-        if(set == null)
+
+    /**
+     * Join two subsets into a single subset, performing the merge by applying the <i>union by rank</i>.
+     *
+     * @param e1 the first element which related subset has to be merged
+     * @param e2 the second element which related subset has to be merged
+     */
+    public void union( E e1, E e2 )
+    {
+        DisjointSetNode<E> e1Root = find( getNode( e1 ) );
+        DisjointSetNode<E> e2Root = find( getNode( e2 ) );
+
+        if ( e1Root == e2Root )
+        {
             return;
-        objectsToNodes.remove(data);
-    }
-    
-    
-            
-    
-    
-    public class Node<E>{
-        private Node<E> parent;
-        private E value;
-        private int rank;
-        
-        public Node(Node<E> parent,E value){
-            this.parent = parent;
-            this.value = value;
-            this.rank = 0;
         }
-        
-        public E getValue(){
-            return value;
+
+        int comparison = e1Root.compareTo( e2Root );
+        if ( comparison < 0 )
+        {
+            e1Root.setParent( e2Root );
         }
-        
-        public int getRank(){
-            return rank;
+        else if ( comparison > 0 )
+        {
+            e2Root.setParent( e1Root );
         }
-        
-        public boolean equals(Object o){
-            if(!(o instanceof Node))
-                return false;
-            
-            final Node<E> i = (Node<E>)o;
-            if((i.parent != null && parent != null) && !(i.parent.value.equals(parent.value)))
-                return false;
-            if((i.value != null && value != null) && !(i.value.equals(value)))
-                return false;
-            return true;
-        }
-        
-        public String toString(){
-            return "parent = " + (parent != null ? parent.value : null) + " " + (rank > 0 ? "rank = " + rank + " " : " ") + "value = " + (value != null ? value : null);
+        else
+        {
+            e2Root.setParent( e1Root );
+            e1Root.increaseRank();
         }
     }
+
+    /**
+     * Retrieves the {@code DisjointSetNode} from the {@link #disjointSets},
+     * if already previously set, creates a new one and push it in {@link #disjointSets} otherwise.
+     *
+     * @param e the element which related subset has to be returned
+     * @return the input element {@code DisjointSetNode}
+     */
+    private DisjointSetNode<E> getNode( E e )
+    {
+        DisjointSetNode<E> node = disjointSets.get( e );
+
+        if ( node == null )
+        {
+            node = new DisjointSetNode<E>( e );
+            disjointSets.put( e, node );
+        }
+
+        return node;
+    }
+
 }
