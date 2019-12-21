@@ -1,6 +1,5 @@
 package com.app.adt.set;
 
-import com.app.adt.ICollection;
 
 public interface ISet<E>{
     public int length();

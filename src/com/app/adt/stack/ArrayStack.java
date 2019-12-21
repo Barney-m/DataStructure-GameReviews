@@ -48,6 +48,12 @@ public class ArrayStack<T> implements IStack<T>{
 		}
 		return value;
 	}
+        
+        public T peek(){
+            if(size <= 0) return null;
+            T value = store[--size];
+            return value;
+        }
 
 	@Override
 	public boolean contains(T value) {

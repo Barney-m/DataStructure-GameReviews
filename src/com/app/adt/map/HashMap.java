@@ -49,10 +49,8 @@ public class HashMap<K, V> implements IMap<K, V> {
         }
     }
 
-    static final int hash(Object key) {
-        return (key == null)
-                ? 0
-                : key.hashCode();
+    static final int hash(Object o) {
+        return (o == null) ? o.hashCode() : 0;
     }
 
     public HashMap() {

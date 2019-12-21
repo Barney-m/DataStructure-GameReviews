@@ -9,6 +9,8 @@ import com.app.adt.set.HashSet;
 import com.app.adt.set.ISet;
 import com.app.adt.stack.ArrayStack;
 import com.app.adt.stack.IStack;
+import com.app.adt.tree.BinarySearchTree;
+import com.app.adt.tree.ITree;
 
 import com.app.model.Review;
 import java.io.BufferedReader;
@@ -20,6 +22,9 @@ import java.util.Arrays;
 public class Main {
     
     static IList<Review> reviewList = new ArrayList<>();
+    static Review[] r = new Review[100];
+    static ITree<Review> search = new BinarySearchTree();
+    
     public static void main(String[] args) {
         BufferedReader reader = null;
 		
@@ -29,14 +34,30 @@ public class Main {
             String[] dataByRow;
             reader.readLine();
             Review review;
-            
+            int y = 0;
             while((rowData = reader.readLine()).charAt(0) != ',') {
                 dataByRow = rowData.split(",");
 		review = new Review(dataByRow[0],Integer.parseInt(dataByRow[1]),Integer.parseInt(dataByRow[2]),Integer.parseInt(dataByRow[3]),Boolean.parseBoolean(dataByRow[4].toLowerCase()),dataByRow[5],dataByRow[6],dataByRow[7]);
 		reviewList.add(review);
-                
+                r[y] = review;
+                search.add(r[y]);
             }
+            //***********************************
+            //*           Binary Tree           *
+            //***********************************
             
+            IIterator<Review> itt = search.getPreorderIterator();
+            while(itt.hasNext()){
+                Review rev = (Review)itt.next();
+                System.out.println(rev.getTitle());
+            }
+
+            
+            
+            
+            //*********************************
+            //*            Hashing            *
+            //*********************************
             IIterator<Review> it = reviewList.iterator();
             IList<String> titleList = new ArrayList<>();
             IMap<Character,IList> categories = new HashMap<>();

@@ -2,8 +2,10 @@ package com.app.model;
 
 import com.app.adt.IComparable;
 import com.app.adt.IComparator;
+import com.app.adt.tree.BinarySearchTree;
+import com.app.adt.tree.ITree;
 
-public class Review implements IComparable<String>{
+public class Review implements IComparable<Review>{
 	
 	private String date_posted;
 	private int funny;
@@ -14,7 +16,14 @@ public class Review implements IComparable<String>{
 	private String reviews;
 	private String title;
 	
+        ITree<Review> review = new BinarySearchTree<Review>();
+        
 	public Review() {}
+        
+        public Review(ITree<Review> review){
+            this.review = review;
+            
+        }
 	
 	public Review (String date_posted,int funny,int helpful,int hour_played,boolean is_early_access_review,String recommendation,String reviews,String title) {
 		this.date_posted = date_posted;
@@ -91,9 +100,8 @@ public class Review implements IComparable<String>{
 		this.title = title;
 	}
 
-    @Override
-    public int compareTo(String object) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public int compareTo(Review o) {
+        return title.compareTo(o.getTitle());
     }
         
         public class CompareReview implements IComparator<String>{
