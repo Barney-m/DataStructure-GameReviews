@@ -7,6 +7,8 @@ import com.app.adt.map.HashMap;
 import com.app.adt.map.IMap;
 import com.app.adt.queue.ArrayQueue;
 import com.app.adt.queue.IQueue;
+import com.app.adt.set.HashSet;
+import com.app.adt.set.ISet;
 import com.app.adt.stack.ArrayStack;
 import com.app.adt.stack.IStack;
 
@@ -66,7 +68,7 @@ public class Main {
             int index = 0;
             while(iterator.hasNext()){
                 String comment = iterator.next().getReview();
-                comment = comment.replaceAll("[^a-zA-Z ]", "");
+                comment = comment.replaceAll("[^a-zA-Z ]", " ");
                 reviewList.get(index).setReview(comment);
                 filter(unsignificantWord,index,0);
                 index++;
@@ -91,14 +93,110 @@ public class Main {
                 reviewList.get(i).setReview(Arrays.toString(sortedComments));
             }
             
-            System.out.println(reviewList.get(20).getReview());
-            
 	}catch(Exception e) {
             e.printStackTrace();
 	}
         
         
-        
+        //*********************************
+        //*        Duplicate Check        *
+        //*********************************
+        ISet<String> set = new HashSet<String>();
+        IIterator<Review> it = reviewList.iterator();
+        IMap<String,Integer> count = new HashMap<>();
+//        while(it.hasNext()){
+//            String[] comments = it.next().getReview().replaceAll("[^a-zA-Z,]", "").split(",");
+//            int duplicate = 0;
+//            for(int i = 0;i < comments.length;i++){
+//                if(count.containsKey(comments[i]))
+//                    duplicate = count.get(comments[i]);
+//                for(int k = i + 1;k < comments.length;k++){
+//                    if(!set.add(comments[i])){
+//                        duplicate++;
+//                    }
+//                    else if(comments[i].length() >= 5){
+//                        if(comments[k].length() >= 5){
+//                            if(comments[i].substring(0,5).compareTo(comments[k].substring(0,5)) == 0)
+//                                duplicate++;
+//                        }
+//                    }
+//                    else if(comments[i].length() == 4){
+//                        if(comments[k].length() >= 4){
+//                            if(comments[i].substring(0,4).compareTo(comments[k].substring(0,4)) == 0)
+//                                duplicate++;
+//                        }
+//                    }
+//                    else if(comments[i].length() == 3){
+//                        if(comments[k].length() >= 3){
+//                            if(comments[i].substring(0,3).compareTo(comments[k].substring(0,3)) == 0)
+//                                duplicate++;
+//                        }
+//                    }
+//                    else if(comments[i].length() == 2){
+//                        if(comments[k].length() >= 2){
+//                            if(comments[i].substring(0,2).compareTo(comments[k].substring(0,2)) == 0)
+//                                duplicate++;
+//                        }
+//                    }
+//                }
+//                count.put(comments[i], duplicate);
+//                duplicate = 0;
+//            }
+//        }
+int i = 0;
+int duplicate = 0;
+        while(it.hasNext()){
+            String[] comments = it.next().getReview().replaceAll("[^a-zA-Z,]", "").split(",");
+            
+            for(String c : comments){
+                if(c.equals("game"))
+                    i++;
+                
+            }
+            
+            
+            for (String comment : comments) {
+                if (comment.length() == 5) {
+                    if (!set.add(comment)) {
+                        duplicate = count.get(comment);
+                        duplicate++;
+                        count.put(comment, duplicate);
+                    }
+                    else {
+                        count.put(comment, 1);
+                    }
+                } else if (comment.length() == 4) {
+                    if (!set.add(comment.substring(0, 4))) {
+                       duplicate = count.get(comment);
+                       duplicate++;
+                       count.put(comment, duplicate);
+                    }
+                    else {
+                        count.put(comment, 1);
+                    }
+                } else if (comment.length() == 3) {
+                    if (!set.add(comment.substring(0, 3))) {
+                        duplicate++;
+                        count.put(comment, duplicate);
+                    }
+                    else {
+                        count.put(comment, 1);
+                    }
+                } else if (comment.length() == 2) {
+                    if (!set.add(comment.substring(0, 2))) {
+                        duplicate = count.get(comment);
+                        duplicate++;
+                        count.put(comment, duplicate);
+                    }
+                    else {
+                        count.put(comment, 1);
+                    }
+                }
+                
+            }
+        }
+        System.out.println("Duplicate: " + count.get("game"));
+        System.out.println("Actual Number: " + i);
     }
     
     public static void filter(String[] unsignificantWord,int index,int start){

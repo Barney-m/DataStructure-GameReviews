@@ -2,20 +2,16 @@ package com.app.adt.set;
 
 import com.app.adt.ICollection;
 
-public interface ISet<E> extends ICollection<E>{
-    public void add(E data);
-    
-    public void addAll(ICollection<? extends E> data);
-    
-    public boolean remove(Object o);
-    
-    public void clear();
-    
-    public boolean contains(Object o);
+public interface ISet<E>{
+    public int length();
     
     public boolean isEmpty();
     
-    public int length();
+    public boolean contains(E o);
     
-    public Object[] toArray();
+    public boolean add(E data);
+    
+    public boolean remove(E o);
+    
+    public void clear();
 }
