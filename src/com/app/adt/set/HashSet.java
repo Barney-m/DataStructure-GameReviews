@@ -3,6 +3,7 @@ package com.app.adt.set;
 import com.app.adt.map.HashMap;
 
 public class HashSet<E> implements ISet<E>{
+    
     private transient HashMap<E, Object> map;
     
     private static final Object PRESENT = new Object();

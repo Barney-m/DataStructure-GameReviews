@@ -5,6 +5,7 @@ import com.app.adt.list.IList;
 import com.app.adt.list.LinkedList;
 import com.app.adt.map.HashMap;
 import com.app.adt.map.IMap;
+
 import com.app.adt.queue.ArrayQueue;
 import com.app.adt.queue.IQueue;
 import com.app.adt.set.HashSet;
@@ -101,7 +102,7 @@ public class Main {
         //*********************************
         //*        Duplicate Check        *
         //*********************************
-        ISet<String> set = new HashSet<String>();
+        ISet<String> set = new HashSet<>();
         IIterator<Review> it = reviewList.iterator();
         IMap<String,Integer> count = new HashMap<>();
 //        while(it.hasNext()){
@@ -144,58 +145,73 @@ public class Main {
 //            }
 //        }
 int i = 0;
-int duplicate = 0;
+int x = 0;
+//        while(it.hasNext()){
+//            String[] comments = it.next().getReview().replaceAll("[^a-zA-Z,]", "").split(",");
+//            System.out.println(reviewList.get(x).getReview());
+//            for(String c : comments){
+//                if(c.equals("game"))
+//                    i++;
+//                
+//            }
+//            x++;
+//            
+//            for (String comment : comments) {
+//                if (comment.length() == 5) {
+//                    if (!set.add(comment)) {
+//                        duplicate = count.get(comment);
+//                        duplicate++;
+//                        count.put(comment, duplicate);
+//                    }
+//                    else {
+//                        count.put(comment, 1);
+//                    }
+//                } else if (comment.length() == 4) {
+//                    if (!set.add(comment.substring(0, 4))) {
+//                       duplicate = count.get(comment);
+//                       duplicate++;
+//                       count.put(comment, duplicate);
+//                    }
+//                    else {
+//                        count.put(comment, 1);
+//                    }
+//                } else if (comment.length() == 3) {
+//                    if (!set.add(comment.substring(0, 3))) {
+//                        duplicate++;
+//                        count.put(comment, duplicate);
+//                    }
+//                    else {
+//                        count.put(comment, 1);
+//                    }
+//                } else if (comment.length() == 2) {
+//                    if (!set.add(comment.substring(0, 2))) {
+//                        duplicate = count.get(comment);
+//                        duplicate++;
+//                        count.put(comment, duplicate);
+//                    }
+//                    else {
+//                        count.put(comment, 1);
+//                    }
+//                }
+//            }
+//        }
+
         while(it.hasNext()){
             String[] comments = it.next().getReview().replaceAll("[^a-zA-Z,]", "").split(",");
             
-            for(String c : comments){
-                if(c.equals("game"))
+            
+            for(String game : comments){
+                
+                if(game.equals("gameplay")){
                     i++;
-                
-            }
-            
-            
-            for (String comment : comments) {
-                if (comment.length() == 5) {
-                    if (!set.add(comment)) {
-                        duplicate = count.get(comment);
-                        duplicate++;
-                        count.put(comment, duplicate);
-                    }
-                    else {
-                        count.put(comment, 1);
-                    }
-                } else if (comment.length() == 4) {
-                    if (!set.add(comment.substring(0, 4))) {
-                       duplicate = count.get(comment);
-                       duplicate++;
-                       count.put(comment, duplicate);
-                    }
-                    else {
-                        count.put(comment, 1);
-                    }
-                } else if (comment.length() == 3) {
-                    if (!set.add(comment.substring(0, 3))) {
-                        duplicate++;
-                        count.put(comment, duplicate);
-                    }
-                    else {
-                        count.put(comment, 1);
-                    }
-                } else if (comment.length() == 2) {
-                    if (!set.add(comment.substring(0, 2))) {
-                        duplicate = count.get(comment);
-                        duplicate++;
-                        count.put(comment, duplicate);
-                    }
-                    else {
-                        count.put(comment, 1);
-                    }
                 }
-                
+            }
+            for(String c : comments){
+                count.put(c, 2);
             }
         }
-        System.out.println("Duplicate: " + count.get("game"));
+        
+        System.out.println("Duplicate: " + count.containsKey("absolutely"));
         System.out.println("Actual Number: " + i);
     }
     
