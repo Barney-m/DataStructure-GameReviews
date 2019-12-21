@@ -1,6 +1,8 @@
 import com.app.adt.IIterator;
 import com.app.adt.list.ArrayList;
+import com.app.adt.list.ILinkedList;
 import com.app.adt.list.IList;
+import com.app.adt.list.LinkedList;
 import com.app.adt.map.HashMap;
 import com.app.adt.map.IMap;
 import com.app.adt.queue.ArrayQueue;
@@ -24,6 +26,7 @@ public class Main {
     static IList<Review> reviewList = new ArrayList<>();
     static Review[] r = new Review[100];
     static ITree<Review> search = new BinarySearchTree();
+    static ILinkedList<String> link = new LinkedList<>();
     
     public static void main(String[] args) {
         BufferedReader reader = null;
@@ -82,14 +85,15 @@ public class Main {
             BufferedReader br = new BufferedReader(new FileReader("filter-word.txt"));
             String line = br.readLine();
             String[] unsignificantWord = line.split(" ");
-            
+            for(String s : unsignificantWord)
+                link.add(s);
             IIterator<Review> iterator = reviewList.iterator();
             int index = 0;
             while(iterator.hasNext()){
                 String comment = iterator.next().getReview();
                 comment = comment.replaceAll("[^a-zA-Z ]", " ");
                 reviewList.get(index).setReview(comment);
-                filter(unsignificantWord,index,0);
+                filter(index,0);
                 index++;
             }
             
@@ -239,11 +243,11 @@ int x = 0;
         System.out.println("Actual Number: " + i);
     }
     
-    public static void filter(String[] unsignificantWord,int index,int start){
-        if(start < unsignificantWord.length){
-            reviewList.get(index).setReview(reviewList.get(index).getReview().toLowerCase().replaceAll("\\b" + unsignificantWord[start] + "\\b", ""));
+    public static void filter(int index,int start){
+        if(start < link.size()){
+            reviewList.get(index).setReview(reviewList.get(index).getReview().toLowerCase().replaceAll("\\b" + link.get(start) + "\\b", ""));
             start++;
-            filter(unsignificantWord,index,start);
+            filter(index,start);
         }
     }
 //    
