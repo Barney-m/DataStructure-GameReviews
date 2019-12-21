@@ -17,6 +17,8 @@ public interface IMap<K,V> {
     
     public int length();
     
+    public boolean containsValue(Object value);
+    
     public void clear();
     
     interface Entry<K,V>{

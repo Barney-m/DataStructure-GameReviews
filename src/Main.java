@@ -1,11 +1,8 @@
 import com.app.adt.IIterator;
 import com.app.adt.list.ArrayList;
-import com.app.adt.list.ILinkedList;
 import com.app.adt.list.IList;
-import com.app.adt.list.LinkedList;
 import com.app.adt.map.HashMap;
 import com.app.adt.map.IMap;
-
 import com.app.adt.queue.ArrayQueue;
 import com.app.adt.queue.IQueue;
 import com.app.adt.set.HashSet;
@@ -199,7 +196,6 @@ int x = 0;
         while(it.hasNext()){
             String[] comments = it.next().getReview().replaceAll("[^a-zA-Z,]", "").split(",");
             
-            
             for(String game : comments){
                 
                 if(game.equals("gameplay")){
@@ -207,11 +203,18 @@ int x = 0;
                 }
             }
             for(String c : comments){
-                count.put(c, 2);
+                if(!set.add(c)){
+                    int duplicate = count.get(c);
+                    duplicate++;
+                    count.put(c, duplicate);
+                }
+                else{
+                    count.put(c, 1);
+                }
             }
         }
         
-        System.out.println("Duplicate: " + count.containsKey("absolutely"));
+        System.out.println("Duplicate: " + count.get("gameplay"));
         System.out.println("Actual Number: " + i);
     }
     
