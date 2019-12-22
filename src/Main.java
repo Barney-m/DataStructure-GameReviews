@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
-    
+    static long totalTime = 0;
     static IList<Review> reviewList = new ArrayList<>();
     static Review[] r = new Review[100];
     static ITree<Review> search = new BinarySearchTree();
@@ -74,6 +74,7 @@ public class Main {
             
             
             IIterator<String> tagIterator = titleList.iterator();
+            long startTime = System.nanoTime();
             for(int i = 65;i < 91;i++){
                 IList<String> tagList = new ArrayList<>();
                 char ascii = (char) i;
@@ -84,8 +85,10 @@ public class Main {
                 }
                 if(!tagList.isEmpty())
                     categories.put(ascii, tagList);
-                
             }
+            long endTime = System.nanoTime();
+            System.out.println("\nThe Total Time used for Indexing all data is : " 
+                    + (endTime - startTime) + " ns");
             int l = 0;
             int input;
             System.out.println("\n\n\n\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
@@ -219,6 +222,7 @@ public class Main {
                 link.add(s);
             IIterator<Review> iterator = processList.iterator();
             int index = 0;
+            long startTime = System.nanoTime();
             while(iterator.hasNext()){
                 String comment = iterator.next().getReview();
                 comment = comment.replaceAll("[^a-zA-Z ]", " ");
@@ -226,6 +230,8 @@ public class Main {
                 filter(index,0,processList);
                 index++;
             }
+            long endTime = System.nanoTime();
+            System.out.println("\n\nThe Total Time used for Filter all data is : " + (endTime - startTime) + " ns\n\n");
             
         }catch(Exception e){
             e.printStackTrace();
@@ -234,7 +240,7 @@ public class Main {
         //*********************************
         //*            Sorting            *
         //*********************************
-
+        int x = 0;
         for(int i = 0;i < processList.length();i++){
             String[] comments = processList.get(i).getReview().toLowerCase().split(" ");
             IList<String> value = new ArrayList<String>();
@@ -244,12 +250,23 @@ public class Main {
             }
 
             String[] target = value.toArray(new String[value.length()]);
+            long startTime = System.nanoTime();
             Object[] sortedComments = processList.sort(target);
+            long endTime = System.nanoTime();
+            if(i < 10){
+                totalTime += endTime - startTime;
+                System.out.println("The Loop " + (i + 1) + " of Sorting Used Time is : " 
+                        + (endTime - startTime) + " ns");
+                x++;
+            }
             String strSortedComments = "";
             for(int j = 0;j < sortedComments.length;j++)
                 strSortedComments = sortedComments[j] + " ";
             processList.get(i).setReview(Arrays.toString(sortedComments));
         }
+        
+        System.out.println("\nThe Average of " + x + " Loop of Sorting is : " 
+                + totalTime / x + " ns");
         //*********************************
         //*        Duplicate Check        *
         //*********************************
@@ -257,9 +274,9 @@ public class Main {
         IIterator<Review> it = processList.iterator();
         IMap<String,Integer> count = new HashMap<>();
         int i = 0;
-        int x = 0;
+        
 
-
+        long startTime = System.nanoTime();
         while(it.hasNext()){
             String[] comments = it.next().getReview().replaceAll("[^a-zA-Z,]", "").split(",");
             
@@ -274,6 +291,9 @@ public class Main {
                 }
             }
         }
+        long endTime = System.nanoTime();
+        System.out.println("\n\nThe Total Time used for Remove all Duplicated data is : "
+                + (endTime - startTime) + " ns");
         System.out.println("\n\n*************************");
         System.out.println(title + " - Game Review");
         System.out.println("*************************");
