@@ -89,6 +89,11 @@ public class Main {
             int l = 0;
             int input;
             do{
+                System.out.println("**************************************");
+                System.out.println("*                                    *");
+                System.out.println("*  Choose a tag or exit the program  *");
+                System.out.println("*                                    *");
+                System.out.println("**************************************");
                 char[] tag = new char[27];
                 l = 0;
                 for(int i = 65;i < 91;i++){
@@ -99,6 +104,7 @@ public class Main {
                     }
                 }
                 System.out.println(l + 1 + ". Exit");
+                System.out.print("Enter: ");
                 input = keyboard.nextInt();
                 
                 DisplayTitle(tag[input - 1]);
@@ -170,12 +176,18 @@ public class Main {
             int input;
             int i = 0;
             do{
+                System.out.println("*************************************");
+                System.out.println("*                                   *");
+                System.out.println("*    Choose a game to see review    *");
+                System.out.println("*                                   *");
+                System.out.println("*************************************");
                 i = 0;
                 while(i < title.length){
                     System.out.println(i + 1 + ". " + title[i]);
                     i++;
                 }
                 System.out.println(i + 1 + ". Back");
+                System.out.print("Enter: ");
                 input = keyboard.nextInt();
                 if(input < (i + 1))
                     ShowGameReview(title[input - 1]);
@@ -211,7 +223,6 @@ public class Main {
                 filter(index,0,processList);
                 index++;
             }
-            System.out.println(processList.get(1).getReview());
             
         }catch(Exception e){
             e.printStackTrace();
@@ -260,7 +271,9 @@ public class Main {
                 }
             }
         }
-        
+        System.out.println("\n\n*************************");
+        System.out.println(title + " - Game Review");
+        System.out.println("*************************");
         try{
             BufferedReader br = new BufferedReader(new FileReader("recommendation-word.txt"));
             String[] positive = br.readLine().split(" ");
@@ -277,23 +290,28 @@ public class Main {
             double reviewScore = positiveCount / totalReview;
             double rating = reviewScore - (reviewScore - 0.5) * pow(2,-log10(totalReview + 1));
             
+            if(positiveCount > negativeCount)
+                System.out.println("The " + title + " game is Positive\n");
+            else if(positiveCount < negativeCount)
+                System.out.println("The " + title + " game is Negative\n");
+            else
+                System.out.println("The " + title + " has Mixed review\n");
             
             System.out.println("Total Reviews: " + String.format("%.0f", totalReview));
             System.out.println("Review Score: " + String.format("%.2f", reviewScore));
-            if(positiveCount > negativeCount)
-                System.out.println("The " + title + " game is Positive");
-            else if(positiveCount < negativeCount)
-                System.out.println("The " + title + " game is Negative");
-            else
-                System.out.println("The " + title + " has Mixed review");
+            
             
             System.out.println("Rating: " + String.format("%.2f", rating));
             
-            System.out.println("*****************************");
+            System.out.println("\n*****************************");
             System.out.println("Top Review");
             System.out.println("*****************************");
             Review review = topReview(title);
-            System.out.println(review);
+            System.out.println("Date Posted:\t" + review.getDatePosted());
+            System.out.println("     Review:\t" + review.getReview());
+            System.out.println("       Game:\t" + review.getTitle());
+            System.out.print("Press any key to continue....");
+            System.in.read();
         }catch(Exception e){
             
         }
