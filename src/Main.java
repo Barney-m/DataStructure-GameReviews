@@ -88,6 +88,9 @@ public class Main {
             }
             int l = 0;
             int input;
+            System.out.println("\n\n\n\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            System.out.println("~~~~~ Steam Game Review Checking System ~~~~~");
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
             do{
                 System.out.println("**************************************");
                 System.out.println("*                                    *");
