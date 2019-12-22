@@ -115,7 +115,7 @@ public class Main {
                 
                 DisplayTitle(tag[input - 1]);
                 
-            }while(input < (l + 1));
+            }while(input != (l + 1));
             
             
         }catch(Exception e) {
@@ -197,7 +197,7 @@ public class Main {
                 input = keyboard.nextInt();
                 if(input < (i + 1))
                     ShowGameReview(title[input - 1]);
-            }while(input < (i + 1));
+            }while(input != (i + 1));
         }catch(Exception e){
             
         }
@@ -342,7 +342,8 @@ public class Main {
     
     public static void filter(int index,int start,IList<Review> processList){
         if(start < link.size()){
-            processList.get(index).setReview(processList.get(index).getReview().toLowerCase().replaceAll("\\b" + link.get(start + 1) + "\\b", ""));
+            processList.get(index).setReview(processList.get(index).getReview()
+                    .toLowerCase().replaceAll("\\b" + link.get(start + 1) + "\\b", ""));
             start++;
             filter(index,start,processList);
         }
