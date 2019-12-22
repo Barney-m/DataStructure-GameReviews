@@ -4,58 +4,23 @@ import java.util.Objects;
 
 public class HashMap<K, V> implements IMap<K, V> {
 
-    transient Node<K, V>[] table;
-    final private double loadFactor;
+    transient Entry<K, V>[] entry;
+    static final float loadFactor = 0.75f;
     private int threshold;
     private int size;
+    static final int DEFAULT_INITIAL_CAPACITY = 1 << 4;
 
-    static class Node<K, V>{
-
-        final int hash;
-        final K key; 
-        V value;
-        Node<K, V> prev;
-        Node<K, V> next;
-
-        Node(int hash, K key, V value) {
-            this.hash = hash;
-            this.key = key;
-            this.value = value;
-        }
-
-        public final K getKey() {
-            return key;
-        }
-
-        public final V getValue() {
-            return value;
-        }
-
-        public final boolean equals(Object object) {
-            if (object == this) {
-                return true;
-            }
-            if (object instanceof Node) {
-                Node<?, ?> node = (Node<?, ?>) object;
-                if (Objects.equals(this.key, node.getKey())
-                        && Objects.equals(this.value, node.getValue())) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
+    
 
     static final int hash(Object o) {
         return (o == null) ? o.hashCode() : 0;
     }
 
     public HashMap() {
-        this.loadFactor = 0.75;
+        this(DEFAULT_INITIAL_CAPACITY);
     }
 
     public HashMap(int capacity) {
-        this.loadFactor = 0.75;
         this.threshold = tableSizeFor(capacity);
     }
 
@@ -67,9 +32,9 @@ public class HashMap<K, V> implements IMap<K, V> {
     final void resize() {
 
         // Place everything to a temp variable
-        Node<K, V>[] oldTable = table;
-        int oldCapacity = (oldTable == null) ? 0 : oldTable.length;
-        int oldThreshold = threshold;
+        Entry<K, V>[] tmp = entry;
+        int tmpCapacity = (tmp == null) ? 0 : tmp.length;
+        int tmpThreshold = threshold;
 
         // New variable
         int newCapacity, newThreshold;
@@ -78,20 +43,20 @@ public class HashMap<K, V> implements IMap<K, V> {
         // 1. Table is not empty.
         // 2. Table is empty, but have a specified threshold.
         // 3. Table is empty, and does not have a specified threshold.
-        if (oldCapacity > 0) {
-            newCapacity = oldCapacity << 1;
-            newThreshold = oldThreshold << 1;
-        } else if (oldThreshold > 0) {
-            newCapacity = oldThreshold;
+        if (tmpCapacity > 0) {
+            newCapacity = tmpCapacity << 1;
+            newThreshold = tmpThreshold << 1;
+        } else if (tmpThreshold > 0) {
+            newCapacity = tmpThreshold;
             newThreshold = (int) (newCapacity * loadFactor);
         } else {
             newCapacity = 16;
             newThreshold = (int) (newCapacity * loadFactor);
         }
 
-        Node<K, V>[] newTable = (Node<K, V>[]) new Node[newCapacity];
+        Entry<K, V>[] newEntry = (Entry<K, V>[]) new Entry[newCapacity];
         threshold = newThreshold;
-        table = newTable;
+        entry = newEntry;
 
         /*   
         If oldTable is not empty
@@ -117,69 +82,68 @@ public class HashMap<K, V> implements IMap<K, V> {
                             clean highTail.next
                             move it to higher half of the table (new index)
          */
-        if (oldTable != null) {
-            for (int j = 0; j < oldCapacity; ++j) {
-                Node<K, V> temp = oldTable[j];
+        if (tmp != null) {
+            for (int j = 0; j < tmpCapacity; ++j) {
+                Entry<K, V> temp = tmp[j];
                 if (temp != null) {
-                    oldTable[j] = null;
+                    tmp[j] = null;
                     if (temp.next == null) {
-                        newTable[temp.hash & (newCapacity - 1)] = temp;
+                        newEntry[temp.hash & (newCapacity - 1)] = temp;
                     } else {
-                        Node<K, V> lowHead = null, lowTail = null;
-                        Node<K, V> highHead = null, highTail = null;
+                        Entry<K, V> btmHTra = null, btmTTra = null,topHTra = null, topTTra = null;
                         do {
-                            if ((temp.hash & oldCapacity) == 0) {
-                                if (lowTail == null) {
-                                    lowHead = temp;
+                            if ((temp.hash & tmpCapacity) == 0) {
+                                if (btmTTra == null) {
+                                    btmHTra = temp;
                                 } else {
-                                    lowTail.next = temp;
-                                    temp.prev = lowTail;
+                                    btmTTra.next = temp;
+                                    temp.prev = btmTTra;
                                 }
-                                lowTail = temp;
+                                btmTTra = temp;
                             } else {
-                                if (highTail == null) {
-                                    highHead = temp;
+                                if (topTTra == null) {
+                                    topHTra = temp;
                                 } else {
-                                    highTail.next = temp;
-                                    temp.prev = highTail;
+                                    topTTra.next = temp;
+                                    temp.prev = topTTra;
                                 }
-                                highTail = temp;
+                                topTTra = temp;
                             }
                             temp = temp.next;
                         } while (temp != null);
-                        if (lowTail != null) {
-                            lowTail.next = null;
-                            newTable[j] = lowHead;
+                        if (btmTTra != null) {
+                            btmTTra.next = null;
+                            newEntry[j] = btmHTra;
                         }
-                        if (highTail != null) {
-                            highTail.next = null;
-                            newTable[j + oldCapacity] = highHead;
+                        if (topTTra != null) {
+                            topTTra.next = null;
+                            newEntry[j + tmpCapacity] = topHTra;
                         }
                     }
                 }
             }
         }
-        table = newTable;
+        entry = newEntry;
     }
 
     @Override
     public V get(Object key) {
         int hash = hash(key);
-        int index = (table.length - 1) & hash;
-        Node<K, V> temp;
+        int index = (entry.length - 1) & hash;
+        Entry<K, V> tmp;
 
         /*
         case 1 : table is not empty and have valid length
             case 1.1 : the index contain nodes
                 loop through the nodes
          */
-        if (tableExists()) {
-            if (table[index] != null) {
+        if (entryExists()) {
+            if (entry[index] != null) {
 
-                temp = getNode(hash, key, table[index]);
+                tmp = getNode(hash, key, entry[index]);
                 
-                if (temp != null) {
-                    return temp.value;
+                if (tmp != null) {
+                    return tmp.value;
                 } else {
                     return null;
                 }
@@ -190,12 +154,12 @@ public class HashMap<K, V> implements IMap<K, V> {
 
     @Override
     public V put(K key, V value) {
-        Node<K, V> temp;
-        V oldValue = null;
+        Entry<K, V> tmp;
+        V tmpValue = null;
         int hash = hash(key);
         int index;
 
-        if (!tableExists()) {
+        if (!entryExists()) {
             resize();
         }
 
@@ -204,8 +168,8 @@ public class HashMap<K, V> implements IMap<K, V> {
         eg (1000 will become 0111)
         AND the hash of the key to determine the location of the node
          */
-        index = (table.length - 1) & hash;
-        temp = table[index];
+        index = hash & (entry.length - 1);
+        tmp = entry[index];
 
         /*
         case 1 : there's no node here
@@ -214,32 +178,32 @@ public class HashMap<K, V> implements IMap<K, V> {
             case 2.1 : there's no matching nodes. (new node)
             case 2.2 : temp is the matching nodes. (replace node)
          */
-        if (temp == null) {
-            table[index] = new Node(hash, key, value);
+        if (tmp == null) {
+            entry[index] = new Entry(hash, key, value);
         } else {
-            temp = getNode(hash, key, temp);
-            if (temp == null) {
-                Node<K, V> newNode = new Node(hash, key, value);
-                table[index].prev = newNode;
-                newNode.next = table[index];
-                table[index] = newNode;
+            tmp = getNode(hash, key, tmp);
+            if (tmp == null) {
+                Entry<K, V> newNode = new Entry(hash, key, value);
+                entry[index].prev = newNode;
+                newNode.next = entry[index];
+                entry[index] = newNode;
             } else {
-                oldValue = temp.value;
-                temp.value = value;
+                tmpValue = tmp.value;
+                tmp.value = value;
             }
         }
-        if (++size > threshold) {
+        if (size + 1 > threshold) {
             resize();
         }
-        return oldValue;
+        return tmpValue;
     }
 
     @Override
     public V remove(Object key) {
-        V oldValue;
+        V tmpValue;
         int hash = hash(key);
-        int index = (table.length - 1) & hash;
-        Node<K, V> temp;
+        int index = (entry.length - 1) & hash;
+        Entry<K, V> tmp;
 
         /*
         case 1 : table is not empty and have valid length
@@ -256,39 +220,39 @@ public class HashMap<K, V> implements IMap<K, V> {
                     update prev pointer
                     
          */
-        if (tableExists()) {
-            if (table[index] != null) {
-                temp = table[index];
+        if (entryExists()) {
+            if (entry[index] != null) {
+                tmp = entry[index];
 
-                if (compareKeys(hash, key, temp)) {
-                    if (temp.next == null) {
-                        table[index] = null;
+                if (compareKey(hash, key, tmp)) {
+                    if (tmp.next == null) {
+                        entry[index] = null;
                     } else {
-                        temp.next.prev = temp.prev;
-                        temp.next = null;
+                        tmp.next.prev = tmp.prev;
+                        tmp.next = null;
                     }
 
                     --size;
-                    oldValue = temp.value;
-                    temp.value = null;
-                    return oldValue;
+                    tmpValue = tmp.value;
+                    tmp.value = null;
+                    return tmpValue;
                 }
 
-                temp = getNode(hash, key, temp.next);
+                tmp = getNode(hash, key, tmp.next);
                 
-                if (temp != null) {
-                    if (temp.next != null) {
-                        temp.next.prev = temp.prev;
-                        temp.next = null;
+                if (tmp != null) {
+                    if (tmp.next != null) {
+                        tmp.next.prev = tmp.prev;
+                        tmp.next = null;
                     }
 
-                    temp.prev.next = temp.next;
-                    temp.prev = null;
+                    tmp.prev.next = tmp.next;
+                    tmp.prev = null;
 
                     --size;
-                    oldValue = temp.value;
-                    temp.value = null;
-                    return oldValue;
+                    tmpValue = tmp.value;
+                    tmp.value = null;
+                    return tmpValue;
                 }
             }
         }
@@ -308,8 +272,8 @@ public class HashMap<K, V> implements IMap<K, V> {
 
     @Override
     public boolean containsValue(Object value) {
-        Node<K, V>[] tab;
-        V v;
+        Entry<K, V>[] tmp;
+        V tmpValue;
 
         /*
         case 1 : table is not empty and have at least one node
@@ -318,11 +282,11 @@ public class HashMap<K, V> implements IMap<K, V> {
                     case 1.1 : values match
                         return true
          */
-        if ((tab = table) != null && size > 0) {
-            for (int i = 0; i < tab.length; ++i) {
-                for (Node<K, V> e = tab[i]; e != null; e = e.next) {
-                    if ((v = e.value) == value
-                            || (value != null && value.equals(v))) {
+        if ((tmp = entry) != null && size > 0) {
+            for (int i = 0; i < tmp.length; ++i) {
+                for (Entry<K, V> e = tmp[i]; e != null; e = e.next) {
+                    if ((tmpValue = e.value) == value
+                            || (value != null && value.equals(tmpValue))) {
                         return true;
                     }
                 }
@@ -333,17 +297,17 @@ public class HashMap<K, V> implements IMap<K, V> {
 
     @Override
     public void clear() {
-        if (tableExists()) {
+        if (entryExists()) {
             size = 0;
-            for (int i = 0; i < table.length; i++) {
-                table[i] = null;
+            for (int i = 0; i < entry.length; i++) {
+                entry[i] = null;
             }
         }
 
     }
 
-    private boolean tableExists() {
-        return table != null && table.length > 0;
+    private boolean entryExists() {
+        return entry != null && entry.length > 0;
     }
 
     /*
@@ -367,14 +331,14 @@ public class HashMap<K, V> implements IMap<K, V> {
      * Return       : true  - A match!
      *                false - No matching nodes
      */
-    private Node<K, V> getNode(int hash, Object key, Node<K, V> node) {
-        while (compareKeys(hash, key, node) == false) {
-            if (node.next == null) {
+    private Entry<K, V> getNode(int hash, Object key, Entry<K, V> tmpEntry) {
+        while (compareKey(hash, key, tmpEntry) == false) {
+            if (tmpEntry.next == null) {
                 return null;
             }
-            node = node.next;
+            tmpEntry = tmpEntry.next;
         }
-        return node;
+        return tmpEntry;
     }
 
     /*
@@ -382,10 +346,47 @@ public class HashMap<K, V> implements IMap<K, V> {
      * Return       : true  - Match
      *                false - Does not match
      */
-    private boolean compareKeys(int hash, Object key, Node<K, V> node) {
-        K nodeKey = node.key;
+    private boolean compareKey(int hash, Object key, Entry<K, V> tmpEntry) {
+        K entryKey = tmpEntry.key;
 
-        return node.hash == hash
-                && (nodeKey == key || (key != null && key.equals(nodeKey)));
+        return tmpEntry.hash == hash
+                && (entryKey == key || (key != null && key.equals(entryKey)));
+    }
+    
+    static class Entry<K, V>{
+
+        final int hash;
+        final K key; 
+        V value;
+        Entry<K, V> prev;
+        Entry<K, V> next;
+
+        public Entry(int hash, K key, V value) {
+            this.hash = hash;
+            this.key = key;
+            this.value = value;
+        }
+
+        public final K getKey() {
+            return key;
+        }
+
+        public final V getValue() {
+            return value;
+        }
+
+        public final boolean equals(Object object) {
+            if (object == this) {
+                return true;
+            }
+            if (object instanceof Entry) {
+                Entry<?, ?> tmp = (Entry<?, ?>) object;
+                if (Objects.equals(this.key, tmp.getKey())
+                        && Objects.equals(this.value, tmp.getValue())) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

@@ -147,19 +147,6 @@ public class ArrayList<E> implements IList<E>{
             }
           }
 	
-	public boolean validate() {
-        int localSize = 0;
-        for (int i = 0;i < array.length;i++) {
-            E element = array[i];
-            if (i<size) {
-                if (element == null) return false;
-                localSize++;
-            } else {
-                if (element != null) return false;
-            }
-        }
-        return (localSize == size);
-    }
 	
 	public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -177,7 +164,7 @@ public class ArrayList<E> implements IList<E>{
        return Arrays.copyOf(array, size);
     }
     
-    @Override
+    @SuppressWarnings("unchecked")
     public E[] toArray(E[] data) {
         if(data.length < size)
             return (E[])Arrays.copyOf(array, size, data.getClass());
@@ -262,7 +249,7 @@ public class ArrayList<E> implements IList<E>{
             return cursor != 0;
         }
 
-        @Override
+        @SuppressWarnings("unchecked")
         public E previous() {
             int i = cursor - 1;
             
