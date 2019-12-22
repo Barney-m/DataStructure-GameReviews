@@ -9,13 +9,10 @@ public class HashMap<K, V> implements IMap<K, V> {
     private int threshold;
     private int size;
 
-    // https://www.baeldung.com/java-hashcode
-    // implement hashCode() inside object classes 
-    // so Object.hash() can use it effectively.
-    static class Node<K, V> {
+    static class Node<K, V>{
 
-        final int hash; // The hash of the key (Immutable)
-        final K key; // The key (Also immutable)
+        final int hash;
+        final K key; 
         V value;
         Node<K, V> prev;
         Node<K, V> next;

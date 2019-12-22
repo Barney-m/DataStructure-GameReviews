@@ -110,6 +110,8 @@ public class ArrayList<E> implements IList<E>{
         }
 	
 	public void clear() {
+            for(int i = 0;i < array.length;i++)
+                array[i] = null;
             size = 0;
 	}
 	

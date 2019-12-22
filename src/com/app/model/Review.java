@@ -99,15 +99,13 @@ public class Review implements IComparable<Review>{
 	public void setTitle(String title) {
 		this.title = title;
 	}
-
-    public int compareTo(Review o) {
-        return title.compareTo(o.getTitle());
-    }
         
-        public class CompareReview implements IComparator<String>{
-            @Override
-            public int compare(String object1, String object2) {
-                return 1;
-            }
+        public String toString(){
+            return getDatePosted() + " " + getReview() + " " + getTitle();
         }
+
+        public int compareTo(Review o) {
+            return title.compareTo(o.getTitle());
+        }
+        
 }

@@ -19,7 +19,9 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import static java.lang.Math.*;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class Main {
     
@@ -27,148 +29,88 @@ public class Main {
     static Review[] r = new Review[100];
     static ITree<Review> search = new BinarySearchTree();
     static ILinkedList<String> link = new LinkedList<>();
+    static IMap<Character,IList> categories = new HashMap<>();
+    static Scanner keyboard = new Scanner(System.in);
     
-    public static void main(String[] args) {
+    public static void init(){
         BufferedReader reader = null;
-		
-	try{
+        try{
             reader = new BufferedReader(new FileReader("steam_reviews.csv"));
             String rowData = null;
             String[] dataByRow;
             reader.readLine();
             Review review;
-            int y = 0;
             while((rowData = reader.readLine()).charAt(0) != ',') {
                 dataByRow = rowData.split(",");
 		review = new Review(dataByRow[0],Integer.parseInt(dataByRow[1]),Integer.parseInt(dataByRow[2]),Integer.parseInt(dataByRow[3]),Boolean.parseBoolean(dataByRow[4].toLowerCase()),dataByRow[5],dataByRow[6],dataByRow[7]);
 		reviewList.add(review);
-                r[y] = review;
-                search.add(r[y]);
             }
-            //***********************************
-            //*           Binary Tree           *
-            //***********************************
-            
-            IIterator<Review> itt = search.getPreorderIterator();
-            while(itt.hasNext()){
-                Review rev = (Review)itt.next();
-                System.out.println(rev.getTitle());
-            }
-
-            
-            
-            
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    
+    public static void main(String[] args) {
+        init();
+	
+	try{
             //*********************************
             //*            Hashing            *
             //*********************************
             IIterator<Review> it = reviewList.iterator();
             IList<String> titleList = new ArrayList<>();
-            IMap<Character,IList> categories = new HashMap<>();
+            
             while(it.hasNext()){
                 titleList.add(it.next().getTitle());
             }
-            System.out.println(titleList);
             Object[] arrTitle = titleList.toArray();
+            titleList.clear();
+            ISet<String> titleSet = new HashSet<>();
+            for(int i = 0;i < arrTitle.length;i++){
+                if(titleSet.add((String)arrTitle[i])){
+                    titleList.add((String)arrTitle[i]);
+                };
+            }
             
-            for(int i = 0;i < titleList.length();i++){
-                for(int k = i + 1;k < titleList.length();k++){
-                    if(titleList.get(i).equals(titleList.get(k)))
-                        titleList.remove(k);
+            
+            IIterator<String> tagIterator = titleList.iterator();
+            for(int i = 65;i < 91;i++){
+                IList<String> tagList = new ArrayList<>();
+                char ascii = (char) i;
+                for(int k = 0;k < titleList.length();k++){
+                    if(titleList.get(k).charAt(0) == ascii){
+                        tagList.add(titleList.get(k));
+                    }
                 }
+                if(!tagList.isEmpty())
+                    categories.put(ascii, tagList);
+                
             }
-            
-            System.out.println(titleList);
-            
-            //**********************************
-            //*             Filter             *
-            //**********************************
-            BufferedReader br = new BufferedReader(new FileReader("filter-word.txt"));
-            String line = br.readLine();
-            String[] unsignificantWord = line.split(" ");
-            for(String s : unsignificantWord)
-                link.add(s);
-            IIterator<Review> iterator = reviewList.iterator();
-            int index = 0;
-            while(iterator.hasNext()){
-                String comment = iterator.next().getReview();
-                comment = comment.replaceAll("[^a-zA-Z ]", " ");
-                reviewList.get(index).setReview(comment);
-                filter(index,0);
-                index++;
-            }
-            
-            //*********************************
-            //*            Sorting            *
-            //*********************************
-            for(int i = 0;i < reviewList.length();i++){
-                String[] comments = reviewList.get(i).getReview().toLowerCase().split(" ");
-                IList<String> value = new ArrayList<String>();
-                for(String data : comments){
-                    if(!data.equals(""))
-                        value.add(data);
+            int l = 0;
+            int input;
+            do{
+                char[] tag = new char[27];
+                l = 0;
+                for(int i = 65;i < 91;i++){
+                    if(categories.containsKey((char)i)){
+                        tag[l] = (char)i;
+                        System.out.println(l + 1 + ". " + tag[l]);
+                        l++;
+                    }
                 }
-
-                String[] target = value.toArray(new String[value.length()]);
-                Object[] sortedComments = reviewList.sort(target);
-                String strSortedComments = "";
-                for(int j = 0;j < sortedComments.length;j++)
-                    strSortedComments = sortedComments[j] + " ";
-                reviewList.get(i).setReview(Arrays.toString(sortedComments));
-            }
+                System.out.println(l + 1 + ". Exit");
+                input = keyboard.nextInt();
+                
+                DisplayTitle(tag[input - 1]);
+                
+            }while(input < (l + 1));
             
-	}catch(Exception e) {
+            
+        }catch(Exception e) {
             e.printStackTrace();
 	}
-        
-        
-        //*********************************
-        //*        Duplicate Check        *
-        //*********************************
-        ISet<String> set = new HashSet<>();
-        IIterator<Review> it = reviewList.iterator();
-        IMap<String,Integer> count = new HashMap<>();
-//        while(it.hasNext()){
-//            String[] comments = it.next().getReview().replaceAll("[^a-zA-Z,]", "").split(",");
-//            int duplicate = 0;
-//            for(int i = 0;i < comments.length;i++){
-//                if(count.containsKey(comments[i]))
-//                    duplicate = count.get(comments[i]);
-//                for(int k = i + 1;k < comments.length;k++){
-//                    if(!set.add(comments[i])){
-//                        duplicate++;
-//                    }
-//                    else if(comments[i].length() >= 5){
-//                        if(comments[k].length() >= 5){
-//                            if(comments[i].substring(0,5).compareTo(comments[k].substring(0,5)) == 0)
-//                                duplicate++;
-//                        }
-//                    }
-//                    else if(comments[i].length() == 4){
-//                        if(comments[k].length() >= 4){
-//                            if(comments[i].substring(0,4).compareTo(comments[k].substring(0,4)) == 0)
-//                                duplicate++;
-//                        }
-//                    }
-//                    else if(comments[i].length() == 3){
-//                        if(comments[k].length() >= 3){
-//                            if(comments[i].substring(0,3).compareTo(comments[k].substring(0,3)) == 0)
-//                                duplicate++;
-//                        }
-//                    }
-//                    else if(comments[i].length() == 2){
-//                        if(comments[k].length() >= 2){
-//                            if(comments[i].substring(0,2).compareTo(comments[k].substring(0,2)) == 0)
-//                                duplicate++;
-//                        }
-//                    }
-//                }
-//                count.put(comments[i], duplicate);
-//                duplicate = 0;
-//            }
-//        }
-int i = 0;
-int x = 0;
-//        while(it.hasNext()){
+            
+  //        while(it.hasNext()){
 //            String[] comments = it.next().getReview().replaceAll("[^a-zA-Z,]", "").split(",");
 //            System.out.println(reviewList.get(x).getReview());
 //            for(String c : comments){
@@ -216,17 +158,97 @@ int x = 0;
 //                    }
 //                }
 //            }
-//        }
+//        }          
+        
+        
+        
+    }
+    
+    public static void DisplayTitle(char tag){
+        try{
+            String[] title = categories.get(tag).toString().split(",");
+            int input;
+            int i = 0;
+            do{
+                i = 0;
+                while(i < title.length){
+                    System.out.println(i + 1 + ". " + title[i]);
+                    i++;
+                }
+                System.out.println(i + 1 + ". Back");
+                input = keyboard.nextInt();
+                if(input < (i + 1))
+                    ShowGameReview(title[input - 1]);
+            }while(input < (i + 1));
+        }catch(Exception e){
+            
+        }
+    }
+    
+    public static void ShowGameReview(String title){
+        IIterator<Review> iter = reviewList.iterator();
+        IList<Review> processList = new ArrayList<>();
+        while(iter.hasNext()){
+            Review r;
+            if((r = iter.next()).getTitle().equals(title))
+                processList.add(r);
+        }
+        //**********************************
+        //*             Filter             *
+        //**********************************
+        try{
+            BufferedReader br = new BufferedReader(new FileReader("filter-word.txt"));
+            String line = br.readLine();
+            String[] unsignificantWord = line.split(" ");
+            for(String s : unsignificantWord)
+                link.add(s);
+            IIterator<Review> iterator = processList.iterator();
+            int index = 0;
+            while(iterator.hasNext()){
+                String comment = iterator.next().getReview();
+                comment = comment.replaceAll("[^a-zA-Z ]", " ");
+                processList.get(index).setReview(comment);
+                filter(index,0,processList);
+                index++;
+            }
+            System.out.println(processList.get(1).getReview());
+            
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        //*********************************
+        //*            Sorting            *
+        //*********************************
+
+        for(int i = 0;i < processList.length();i++){
+            String[] comments = processList.get(i).getReview().toLowerCase().split(" ");
+            IList<String> value = new ArrayList<String>();
+            for(String data : comments){
+                if(!data.equals(""))
+                    value.add(data);
+            }
+
+            String[] target = value.toArray(new String[value.length()]);
+            Object[] sortedComments = processList.sort(target);
+            String strSortedComments = "";
+            for(int j = 0;j < sortedComments.length;j++)
+                strSortedComments = sortedComments[j] + " ";
+            processList.get(i).setReview(Arrays.toString(sortedComments));
+        }
+        //*********************************
+        //*        Duplicate Check        *
+        //*********************************
+        ISet<String> set = new HashSet<>();
+        IIterator<Review> it = processList.iterator();
+        IMap<String,Integer> count = new HashMap<>();
+        int i = 0;
+        int x = 0;
+
 
         while(it.hasNext()){
             String[] comments = it.next().getReview().replaceAll("[^a-zA-Z,]", "").split(",");
             
-            for(String game : comments){
-                
-                if(game.equals("gameplay")){
-                    i++;
-                }
-            }
             for(String c : comments){
                 if(!set.add(c)){
                     int duplicate = count.get(c);
@@ -239,52 +261,112 @@ int x = 0;
             }
         }
         
-        System.out.println("Duplicate: " + count.get("gameplay"));
-        System.out.println("Actual Number: " + i);
-    }
-    
-    public static void filter(int index,int start){
-        if(start < link.size()){
-            reviewList.get(index).setReview(reviewList.get(index).getReview().toLowerCase().replaceAll("\\b" + link.get(start) + "\\b", ""));
-            start++;
-            filter(index,start);
+        try{
+            BufferedReader br = new BufferedReader(new FileReader("recommendation-word.txt"));
+            String[] positive = br.readLine().split(" ");
+            String[] negative = br.readLine().split(" ");
+            int positiveCount = 0;
+            int negativeCount = 0;
+            for(int j = 0;j < processList.length();j++){
+                String[] words = processList.get(j).getReview().replaceAll("[^a-zA-Z,]", "").split(",");
+                positiveCount += positiveCheck(positive,words);
+                negativeCount += negativeCheck(negative,words);
+            }
+            
+            double totalReview = positiveCount + negativeCount;
+            double reviewScore = positiveCount / totalReview;
+            double rating = reviewScore - (reviewScore - 0.5) * pow(2,-log10(totalReview + 1));
+            
+            
+            System.out.println("Total Reviews: " + String.format("%.0f", totalReview));
+            System.out.println("Review Score: " + String.format("%.2f", reviewScore));
+            if(positiveCount > negativeCount)
+                System.out.println("The " + title + " game is Positive");
+            else if(positiveCount < negativeCount)
+                System.out.println("The " + title + " game is Negative");
+            else
+                System.out.println("The " + title + " has Mixed review");
+            
+            System.out.println("Rating: " + String.format("%.2f", rating));
+            
+            System.out.println("*****************************");
+            System.out.println("Top Review");
+            System.out.println("*****************************");
+            Review review = topReview(title);
+            System.out.println(review);
+        }catch(Exception e){
+            
         }
     }
-//    
-//    public static void quickSort(String[] data,int start,int end){
-//        int i = start;
-//        int j = end;
-//        
-//        // only examine arrays of 2 or more elements.
-//        if(end - start >= i){
-//            // The pivot point of the sort method is arbitrarily set to the first element int the array.
-//            String pivot = data[i];
-//            
-//            
-//            while(j > i){
-//                // from the left, if the current element is lexicographically less than the (original)
-//                while(data[i].compareTo(pivot) <= 0 && i < end && j > i)
-//                    i++;
-//                // from the right, if the current element is lexicographically greater than the (original)
-//                while(data[j].compareTo(pivot) >= 0 && j > start && j >= i)
-//                    j--;
-//                // check the two elements in the center, the last comparison before the scans cross.
-//                if(j > i)
-//                    swap(data,i,j);
-//            }
-//            // Swap the pivot point with the last element of the left partition.
-//            swap(data,start,j);
-//            // sort left partition
-//            quickSort(data,start,j-1);
-//            // sort right partition
-//            quickSort(data,j+1,end);
-//        }
-//    }
-//    
-//    private static void swap(String[] data,int i,int j){
-//        String tmp = data[i];
-//        data[i] = data[j];
-//        data[j] = tmp;
-//    }
     
+    public static void filter(int index,int start,IList<Review> processList){
+        if(start < link.size()){
+            processList.get(index).setReview(processList.get(index).getReview().toLowerCase().replaceAll("\\b" + link.get(start + 1) + "\\b", ""));
+            start++;
+            filter(index,start,processList);
+        }
+    }
+    
+    public static int positiveCheck(String[] positive,String[] words){
+        int positiveCount = 0;
+        for (String word : words) {
+            for (String p : positive) {
+                if (word.equals(p)) {
+                    positiveCount++;
+                    break;
+                }
+            }
+        }
+        return positiveCount;
+    }
+    
+    public static int negativeCheck(String[] negative,String[] words){
+        int negativeCount = 0;
+        for (String word : words) {
+            for (String n : negative) {
+                if (word.equals(n)) {
+                    negativeCount++;
+                    break;
+                }
+            }
+        }
+        return negativeCount;
+    }
+    
+    public static Review topReview(String title){
+        
+        IIterator<Review> it = reviewList.iterator();
+        Review review = new Review();
+        int max = 0;
+        while(it.hasNext()){
+            Review r = it.next();
+            if(r.getTitle().equals(title))
+                max = Math.max(max, r.getHelpful());
+            
+        }
+        
+        it = reviewList.iterator();
+        while(it.hasNext()){
+            Review r = it.next();
+            if(max == r.getHelpful())
+                review = r;
+        }
+        
+        try{
+            BufferedReader reader = new BufferedReader(new FileReader("steam_reviews.csv"));
+            String rowData = null;
+            String[] dataByRow;
+            reader.readLine();
+            while((rowData = reader.readLine()).charAt(0) != ',') {
+                dataByRow = rowData.split(",");
+		Review r = new Review(dataByRow[0],Integer.parseInt(dataByRow[1]),Integer.parseInt(dataByRow[2]),Integer.parseInt(dataByRow[3]),Boolean.parseBoolean(dataByRow[4].toLowerCase()),dataByRow[5],dataByRow[6],dataByRow[7]);
+		if(r.getHelpful() == max && r.getTitle().equals(title))
+                    review = r;
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        
+        return review;
+    }
 }
