@@ -303,9 +303,9 @@ public class Main {
             
             System.out.println("Rating: " + String.format("%.2f", rating));
             
-            System.out.println("\n*****************************");
-            System.out.println("Top Review");
-            System.out.println("*****************************");
+            System.out.println("\n****************************");
+            System.out.println("         Top Review         ");
+            System.out.println("****************************");
             Review review = topReview(title);
             System.out.println("Date Posted:\t" + review.getDatePosted());
             System.out.println("     Review:\t" + review.getReview());
