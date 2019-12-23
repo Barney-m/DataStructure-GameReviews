@@ -25,6 +25,7 @@ import java.util.Scanner;
 
 public class Main {
     static long totalTime = 0;
+    static int x = 0;
     static IList<Review> reviewList = new ArrayList<>();
     static Review[] r = new Review[100];
     static ITree<Review> search = new BinarySearchTree();
@@ -74,6 +75,7 @@ public class Main {
             
             
             IIterator<String> tagIterator = titleList.iterator();
+            x = 0;
             long startTime = System.nanoTime();
             for(int i = 65;i < 91;i++){
                 IList<String> tagList = new ArrayList<>();
@@ -81,14 +83,16 @@ public class Main {
                 for(int k = 0;k < titleList.length();k++){
                     if(titleList.get(k).charAt(0) == ascii){
                         tagList.add(titleList.get(k));
+                        x++;
                     }
                 }
-                if(!tagList.isEmpty())
+                if(!tagList.isEmpty()){
                     categories.put(ascii, tagList);
+                }
             }
             long endTime = System.nanoTime();
-            System.out.println("\nThe Total Time used for Indexing all data is : " 
-                    + (endTime - startTime) + " ns");
+            System.out.println("\nThe Average Time used for Indexing all data is : " 
+                    + ((endTime - startTime) / x) + " ns");
             int l = 0;
             int input;
             System.out.println("\n\n\n\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
@@ -222,16 +226,21 @@ public class Main {
                 link.add(s);
             IIterator<Review> iterator = processList.iterator();
             int index = 0;
-            long startTime = System.nanoTime();
+            totalTime = 0;
+            x = 0;
+            
             while(iterator.hasNext()){
                 String comment = iterator.next().getReview();
+                long startTime = System.nanoTime();
                 comment = comment.replaceAll("[^a-zA-Z ]", " ");
                 processList.get(index).setReview(comment);
                 filter(index,0,processList);
+                long endTime = System.nanoTime();
+                totalTime += (endTime - startTime);
                 index++;
             }
-            long endTime = System.nanoTime();
-            System.out.println("\n\nThe Total Time used for Filter all data is : " + (endTime - startTime) + " ns\n\n");
+            
+            System.out.println("\n\nThe Average Time used for Filter all data is : " + totalTime / x + " ns\n\n");
             
         }catch(Exception e){
             e.printStackTrace();
@@ -240,7 +249,7 @@ public class Main {
         //*********************************
         //*            Sorting            *
         //*********************************
-        int x = 0;
+        x = 0;
         for(int i = 0;i < processList.length();i++){
             String[] comments = processList.get(i).getReview().toLowerCase().split(" ");
             IList<String> value = new ArrayList<String>();
@@ -275,16 +284,18 @@ public class Main {
         IMap<String,Integer> count = new HashMap<>();
         int i = 0;
         
-
+        x = 0;
         long startTime = System.nanoTime();
         while(it.hasNext()){
             String[] comments = it.next().getReview().replaceAll("[^a-zA-Z,]", "").split(",");
             
             for(String c : comments){
+                
                 if(!set.add(c)){
                     int duplicate = count.get(c);
                     duplicate++;
                     count.put(c, duplicate);
+                    x++;
                 }
                 else{
                     count.put(c, 1);
@@ -292,8 +303,8 @@ public class Main {
             }
         }
         long endTime = System.nanoTime();
-        System.out.println("\n\nThe Total Time used for Remove all Duplicated data is : "
-                + (endTime - startTime) + " ns");
+        System.out.println("\n\nThe Average Time used for Remove all Duplicated data is : "
+                + ((endTime - startTime) / x) + " ns");
         System.out.println("\n\n*************************");
         System.out.println(title + " - Game Review");
         System.out.println("*************************");
@@ -347,6 +358,7 @@ public class Main {
             start++;
             filter(index,start,processList);
         }
+        x++;
     }
     
     public static int positiveCheck(String[] positive,String[] words){
