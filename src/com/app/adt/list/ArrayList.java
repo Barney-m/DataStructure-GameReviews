@@ -122,10 +122,6 @@ public class ArrayList<E> implements IList<E>{
             }
             return false;
 	}
-	
-	public int size() {
-            return size;
-        }
         
         private void doubleArray(){
             E[] tmp = array;
