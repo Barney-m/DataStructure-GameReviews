@@ -2,6 +2,8 @@ package com.app.adt.list;
 
 import java.util.Iterator;
 
+//Author: Ng Jun Jet
+
 public interface ILinkedList<E>{
 	public E add(E data, int index);
 

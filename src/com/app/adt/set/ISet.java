@@ -1,5 +1,6 @@
 package com.app.adt.set;
 
+//Author: Chan Chong Peng
 
 public interface ISet<E>{
     public int length();

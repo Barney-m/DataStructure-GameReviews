@@ -1,5 +1,7 @@
 package com.app.adt.set;
 
+//Author: Chan Chong Peng
+
 import com.app.adt.map.HashMap;
 
 public class HashSet<E> implements ISet<E>{

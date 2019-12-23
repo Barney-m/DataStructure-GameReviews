@@ -1,11 +1,11 @@
 package com.app.adt.list;
 
 import java.util.Arrays;
-import com.app.adt.IComparable;
-import com.app.adt.IComparator;
 import com.app.adt.IIterator;
 import java.util.ConcurrentModificationException;
 import java.util.NoSuchElementException;
+
+//Author: Chong Ken Shen
 
 public class ArrayList<E> implements IList<E>{
 	

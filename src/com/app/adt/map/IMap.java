@@ -1,5 +1,6 @@
 package com.app.adt.map;
 
+//Author: Chan Chong Peng, Cheah Poh Reng
 
 public interface IMap<K,V> {
     public V put(K key,V value);

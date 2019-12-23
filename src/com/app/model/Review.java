@@ -1,5 +1,7 @@
 package com.app.model;
 
+//Author: Chong Ken Shen
+
 import com.app.adt.IComparable;
 
 public class Review implements IComparable<Review>{

@@ -1,5 +1,7 @@
 package com.app.adt.list;
 
+//Author: Ng Jun Jet
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 

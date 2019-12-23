@@ -1,5 +1,8 @@
 package com.app.adt.list;
 
+//Author: Chong Ken Shen
+
+
 import com.app.adt.IIterator;
 
 public interface IList<E> {

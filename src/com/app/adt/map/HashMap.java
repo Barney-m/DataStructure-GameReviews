@@ -1,5 +1,7 @@
 package com.app.adt.map;
 
+//Author: Chan Chong Peng, Cheah Poh Reng
+
 import java.util.Objects;
 
 public class HashMap<K, V> implements IMap<K, V> {

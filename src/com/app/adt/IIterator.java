@@ -1,5 +1,7 @@
 package com.app.adt;
 
+//Author: Ng Jun Jet
+
 public interface IIterator<E> {
     boolean hasNext();
     
