@@ -1,9 +1,6 @@
 package com.app.model;
 
 import com.app.adt.IComparable;
-import com.app.adt.IComparator;
-import com.app.adt.tree.BinarySearchTree;
-import com.app.adt.tree.ITree;
 
 public class Review implements IComparable<Review>{
 	
@@ -15,15 +12,8 @@ public class Review implements IComparable<Review>{
 	private String recommendation;
 	private String reviews;
 	private String title;
-	
-        ITree<Review> review = new BinarySearchTree<Review>();
-        
+
 	public Review() {}
-        
-        public Review(ITree<Review> review){
-            this.review = review;
-            
-        }
 	
 	public Review (String date_posted,int funny,int helpful,int hour_played,boolean is_early_access_review,String recommendation,String reviews,String title) {
 		this.date_posted = date_posted;

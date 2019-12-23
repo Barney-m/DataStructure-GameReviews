@@ -5,14 +5,8 @@ import com.app.adt.list.IList;
 import com.app.adt.list.LinkedList;
 import com.app.adt.map.HashMap;
 import com.app.adt.map.IMap;
-import com.app.adt.queue.ArrayQueue;
-import com.app.adt.queue.IQueue;
 import com.app.adt.set.HashSet;
 import com.app.adt.set.ISet;
-import com.app.adt.stack.ArrayStack;
-import com.app.adt.stack.IStack;
-import com.app.adt.tree.BinarySearchTree;
-import com.app.adt.tree.ITree;
 
 import com.app.model.Review;
 import java.io.BufferedReader;
@@ -28,7 +22,6 @@ public class Main {
     static int x = 0;
     static IList<Review> reviewList = new ArrayList<>();
     static Review[] r = new Review[100];
-    static ITree<Review> search = new BinarySearchTree();
     static ILinkedList<String> link = new LinkedList<>();
     static IMap<Character,IList> categories = new HashMap<>();
     static Scanner keyboard = new Scanner(System.in);
